@@ -26,7 +26,6 @@ public class SpringBootUserService extends UserService implements UserUseCase {
     }
 
     @Override
-    @Transactional
     public User create(User user) {
         return super.create(user);
     }

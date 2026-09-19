@@ -12,18 +12,15 @@ services:
       - DATA_REDIS_HOST=redis
       - DATA_REDIS_PORT=6379
       - DATA_REDIS_DATABASE=0
-      - >-
-        JAVA_TOOL_OPTIONS=
-        -Djavax.net.ssl.keyStore=/etc/ssl/gateway/gateway.p12
-        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD}
-        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
-        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
       - OTEL_SERVICE_NAME=gateway
       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-gateway-1
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
+    secrets:
+      - KEY_PASSWORD
+      - KEYSTORE_PASSWORD
     volumes:
-      - ./certs/gateway:/etc/ssl/gateway:ro
-      - ./certs/ca:/etc/ssl/ca:ro
+      - ./.certs/gateway:/etc/ssl/gateway:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
     depends_on:
       redis:
         condition: service_healthy
@@ -41,10 +38,10 @@ services:
       - "6379:6379"
     entrypoint: [ "/bin/sh", "/scripts/entrypoint_redis_ssl.sh" ]
     volumes:
-      - ./certs/redis:/etc/ssl/redis
-      - ./certs/redis-healthcheck:/etc/ssl/redis-healthcheck
-      - ./certs/ca:/etc/ssl/ca
-      - ./entrypoint_redis_ssl.sh:/scripts/entrypoint_redis_ssl.sh:ro
+      - ./.certs/redis:/etc/ssl/redis
+      - ./.certs/redis-healthcheck:/etc/ssl/redis-healthcheck
+      - ./.certs/ca:/etc/ssl/ca
+      - ./scripts/entrypoint_redis_ssl.sh:/scripts/entrypoint_redis_ssl.sh:ro
     networks:
       - app-network
     healthcheck:
@@ -60,17 +57,19 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+    secrets:
+      - POSTGRES_PASSWORD
     entrypoint: [ "/bin/bash", "/scripts/entrypoint_postgres_ssl.sh" ]
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./certs/ca:/var/lib/postgresql/ca
-      - ./certs/postgres-db:/var/lib/postgresql/certs
-      - ./entrypoint_postgres_ssl.sh:/scripts/entrypoint_postgres_ssl.sh:ro
+      - ./.certs/ca:/var/lib/postgresql/ca
+      - ./.certs/postgres-db:/var/lib/postgresql/certs
+      - ./scripts/entrypoint_postgres_ssl.sh:/scripts/entrypoint_postgres_ssl.sh:ro
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h /var/run/postgresql -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      test: [ "CMD-SHELL", "pg_isready -h /var/run/postgresql -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -112,11 +111,11 @@ services:
       CONNECT_SECURITY_PROTOCOL: SSL
       CONNECT_SSL_KEYSTORE_TYPE: PKCS12
       CONNECT_SSL_KEYSTORE_LOCATION: /etc/ssl/debezium/debezium.p12
-      CONNECT_SSL_KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
-      CONNECT_SSL_KEY_PASSWORD: ${KEY_PASSWORD}
+      CONNECT_SSL_KEYSTORE_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
+      CONNECT_SSL_KEY_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEY_PASSWORD}'
       CONNECT_SSL_TRUSTSTORE_TYPE: PKCS12
       CONNECT_SSL_TRUSTSTORE_LOCATION: /etc/ssl/debezium/debezium-truststore.p12
-      CONNECT_SSL_TRUSTSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
+      CONNECT_SSL_TRUSTSTORE_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
       CONNECT_SSL_PROTOCOL: TLSv1.3
       CONNECT_SSL_ENABLED_PROTOCOLS: TLSv1.3
       CONNECT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: HTTPS
@@ -124,26 +123,29 @@ services:
       CONNECT_PRODUCER_SECURITY_PROTOCOL: SSL
       CONNECT_PRODUCER_SSL_KEYSTORE_TYPE: PKCS12
       CONNECT_PRODUCER_SSL_KEYSTORE_LOCATION: /etc/ssl/debezium/debezium.p12
-      CONNECT_PRODUCER_SSL_KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
-      CONNECT_PRODUCER_SSL_KEY_PASSWORD: ${KEY_PASSWORD}
+      CONNECT_PRODUCER_SSL_KEYSTORE_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
+      CONNECT_PRODUCER_SSL_KEY_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEY_PASSWORD}'
       CONNECT_PRODUCER_SSL_TRUSTSTORE_TYPE: PKCS12
       CONNECT_PRODUCER_SSL_TRUSTSTORE_LOCATION: /etc/ssl/debezium/debezium-truststore.p12
-      CONNECT_PRODUCER_SSL_TRUSTSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
+      CONNECT_PRODUCER_SSL_TRUSTSTORE_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
       CONNECT_PRODUCER_SSL_PROTOCOL: TLSv1.3
       CONNECT_PRODUCER_SSL_ENABLED_PROTOCOLS: TLSv1.3
       CONNECT_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: HTTPS
       #CONNECT_PRODUCER_INTERCEPTOR_CLASSES: io.debezium.tracing.DebeziumTracingProducerInterceptor
-      JAVA_TOOL_OPTIONS: >-
-        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
-        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+      CONNECT_CONFIG_PROVIDERS: fileprovider
+      CONNECT_CONFIG_PROVIDERS_FILEPROVIDER_CLASS: org.apache.kafka.common.config.provider.FileConfigProvider
+      CONNECT_CONFIG_PROVIDERS_FILEPROVIDER_PARAM_ALLOWED_PATHS: /run/secrets
     depends_on:
       user-service:
         condition: service_healthy
       kafka:
         condition: service_healthy
     volumes:
-      - ./certs/debezium:/etc/ssl/debezium:ro
-      - ./certs/ca:/etc/ssl/ca:ro
+      - ./.certs/debezium:/etc/ssl/debezium:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
+    secrets:
+      - KAFKA_CREDENTIALS_PROPERTIES
+      - DEBEZIUM_CREDENTIALS_PROPERTIES
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8083/connectors" ]
       interval: 5s
@@ -160,16 +162,16 @@ services:
       debezium:
         condition: service_healthy
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
       USER_EVENTS_TOPIC: ${USER_EVENTS_TOPIC}
       FRIENDSHIP_EVENTS_TOPIC: ${FRIENDSHIP_EVENTS_TOPIC}
-      KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
     volumes:
-      - ./certs/debezium:/etc/ssl/debezium:ro
-      - ./certs/ca:/etc/ssl/ca:ro
-      - ./init_debezium.sh:/scripts/init_debezium.sh:ro
+      - ./.certs/debezium:/etc/ssl/debezium:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
+      - ./scripts/init_debezium.sh:/scripts/init_debezium.sh:ro
+    secrets:
+      - DEBEZIUM_CREDENTIALS_PROPERTIES
     entrypoint: [ "/bin/sh", "/scripts/init_debezium.sh" ]
     networks:
       - app-network
@@ -180,17 +182,19 @@ services:
     environment:
       MONGO_INITDB_DATABASE: ${MONGO_DB_DATABASE}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/MONGO_DB_ROOT_PASSWORD
+    secrets:
+      - MONGO_DB_ROOT_PASSWORD
     entrypoint: [ "/bin/bash", "/scripts/entrypoint_mongo_ssl.sh" ]
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
       - ./.mongo/security.keyfile:/data/security.keyfile
-      - ./certs/mongo-db:/etc/ssl/mongo-db
-      - ./certs/mongo-healthcheck:/etc/ssl/mongo-healthcheck
-      - ./certs/ca:/etc/ssl/ca
-      - ./entrypoint_mongo_ssl.sh:/scripts/entrypoint_mongo_ssl.sh:ro
+      - ./.certs/mongo-db:/etc/ssl/mongo-db
+      - ./.certs/mongo-healthcheck:/etc/ssl/mongo-healthcheck
+      - ./.certs/ca:/etc/ssl/ca
+      - ./scripts/entrypoint_mongo_ssl.sh:/scripts/entrypoint_mongo_ssl.sh:ro
     healthcheck:
       test: >-
         mongosh
@@ -217,14 +221,15 @@ services:
       mongo-db:
         condition: service_healthy
     volumes:
-      - ./certs/ca:/etc/ssl/ca:ro
-      - ./certs/mongo-healthcheck:/etc/ssl/mongo-healthcheck:ro
-      - ./init_mongo_replica.sh:/scripts/init_mongo_replica.sh:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
+      - ./.certs/mongo-healthcheck:/etc/ssl/mongo-healthcheck:ro
+      - ./scripts/init_mongo_replica.sh:/scripts/init_mongo_replica.sh:ro
     entrypoint: [ "/bin/bash", "/scripts/init_mongo_replica.sh" ]
     environment:
       MONGO_REPLICA_NAME: ${MONGO_REPLICA_NAME}
       MONGO_DB_ROOT_USERNAME: ${MONGO_DB_ROOT_USERNAME}
-      MONGO_DB_ROOT_PASSWORD: ${MONGO_DB_ROOT_PASSWORD}
+    secrets:
+      - MONGO_DB_ROOT_PASSWORD
     networks:
       - app-network
 
@@ -255,24 +260,26 @@ services:
 
       KAFKA_SSL_KEYSTORE_TYPE: PKCS12
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/ssl/kafka/kafka.p12
-      KAFKA_SSL_KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
-      KAFKA_SSL_KEY_PASSWORD: ${KEY_PASSWORD}
+      KAFKA_SSL_KEYSTORE_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
+      KAFKA_SSL_KEY_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEY_PASSWORD}'
 
       KAFKA_SSL_TRUSTSTORE_TYPE: PKCS12
       KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/ssl/kafka/kafka-truststore.p12
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: ${KEYSTORE_PASSWORD}
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '$${fileprovider:/run/secrets/KAFKA_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
       KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_SSL_PROTOCOL: TLSv1.3
       KAFKA_SSL_ENABLED_PROTOCOLS: TLSv1.3
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: HTTPS
-      JAVA_TOOL_OPTIONS: >-
-        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
-        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+      KAFKA_CONFIG_PROVIDERS: fileprovider
+      KAFKA_CONFIG_PROVIDERS_FILEPROVIDER_CLASS: org.apache.kafka.common.config.provider.FileConfigProvider
+      KAFKA_CONFIG_PROVIDERS_FILEPROVIDER_PARAM_ALLOWED_PATHS: /run/secrets
     volumes:
       - kafka_data:/var/lib/kafka/data
-      - ./certs/kafka:/etc/ssl/kafka:ro
-      - ./certs/kafka-healthcheck:/etc/ssl/kafka-healthcheck:ro
-      - ./certs/ca:/etc/ssl/ca:ro
+      - ./.certs/kafka:/etc/ssl/kafka:ro
+      - ./.certs/kafka-healthcheck:/etc/ssl/kafka-healthcheck:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
+    secrets:
+      - KAFKA_CREDENTIALS_PROPERTIES
     healthcheck:
       test:
         [
@@ -301,10 +308,10 @@ services:
       USER_EVENTS_RESPONSE_TOPIC: ${USER_EVENTS_RESPONSE_TOPIC}
       FRIENDSHIP_EVENTS_RESPONSE_TOPIC: ${FRIENDSHIP_EVENTS_RESPONSE_TOPIC}
     volumes:
-      - ./certs/kafka:/etc/ssl/kafka:ro
-      - ./certs/kafka-healthcheck:/etc/ssl/kafka-healthcheck:ro
-      - ./certs/ca:/etc/ssl/ca:ro
-      - ./init_kafka_topics.sh:/scripts/init_kafka_topics.sh:ro
+      - ./.certs/kafka:/etc/ssl/kafka:ro
+      - ./.certs/kafka-healthcheck:/etc/ssl/kafka-healthcheck:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
+      - ./scripts/init_kafka_topics.sh:/scripts/init_kafka_topics.sh:ro
     entrypoint: [ "/bin/sh", "/scripts/init_kafka_topics.sh" ]
     networks:
       - app-network
@@ -319,30 +326,24 @@ services:
       - "8080:8080"
     environment:
       - DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/${POSTGRES_DB}
-      - DATASOURCE_USERNAME=${POSTGRES_USER}
-      - DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - USER_EVENTS_TOPIC=${USER_EVENTS_TOPIC}
       - FRIENDSHIP_EVENTS_TOPIC=${FRIENDSHIP_EVENTS_TOPIC}
       - USER_EVENTS_RESPONSE_TOPIC=${USER_EVENTS_RESPONSE_TOPIC}
       - FRIENDSHIP_EVENTS_RESPONSE_TOPIC=${FRIENDSHIP_EVENTS_RESPONSE_TOPIC}
-      - SSL_KEY_PASSWORD=${KEY_PASSWORD}
-      - SSL_KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
-      - SSL_TRUSTSTORE_PASSWORD=${KEYSTORE_PASSWORD}
       - OTEL_SERVICE_NAME=user-service
       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-service-1
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
       - REDIS_HOST=redis
       - KAFKA_LISTENER_CONCURRENCY=3
-      - >-
-        JAVA_TOOL_OPTIONS=
-        -Djavax.net.ssl.keyStore=/etc/ssl/user-service/user-service.p12 
-        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD} 
-        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12 
-        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+    secrets:
+      - POSTGRES_PASSWORD
+      - KEY_PASSWORD
+      - KEYSTORE_PASSWORD
     volumes:
-      - ./certs/user-service:/etc/ssl/user-service:ro
-      - ./certs/ca:/etc/ssl/ca:ro
+      - ./.certs/user-service:/etc/ssl/user-service:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
     healthcheck:
       test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health/liveness > /dev/null || exit 1" ]
       interval: 5s
@@ -370,31 +371,27 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - DATA_MONGODB_URI=mongodb://${MONGO_DB_ROOT_USERNAME}:${MONGO_DB_ROOT_PASSWORD}@mongo-db:27017/${MONGO_DB_DATABASE}?authSource=admin&replicaSet=${MONGO_REPLICA_NAME}
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CONSUMER_GROUP_ID=user-events-consumer
+      - MONGO_DB_DATABASE=${MONGO_DB_DATABASE}
+      - MONGO_DB_ROOT_USERNAME=${MONGO_DB_ROOT_USERNAME}
       - USER_EVENTS_TOPIC=${USER_EVENTS_TOPIC}
       - FRIENDSHIP_EVENTS_TOPIC=${FRIENDSHIP_EVENTS_TOPIC}
       - USER_EVENTS_RESPONSE_TOPIC=${USER_EVENTS_RESPONSE_TOPIC}
       - FRIENDSHIP_EVENTS_RESPONSE_TOPIC=${FRIENDSHIP_EVENTS_RESPONSE_TOPIC}
-      - SSL_KEY_PASSWORD=${KEY_PASSWORD}
-      - SSL_KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
-      - SSL_TRUSTSTORE_PASSWORD=${KEYSTORE_PASSWORD}
       - REDIS_HOST=redis
       - MONGO_REPLICA_NAME=${MONGO_REPLICA_NAME}
       - OTEL_SERVICE_NAME=user-service-sync
       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-service-sync-1
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
       - KAFKA_LISTENER_CONCURRENCY=3
-      - >-
-        JAVA_TOOL_OPTIONS=
-        -Djavax.net.ssl.keyStore=/etc/ssl/user-service-sync/user-service-sync.p12
-        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD}
-        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
-        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+    secrets:
+      - MONGO_DB_ROOT_PASSWORD
+      - KEY_PASSWORD
+      - KEYSTORE_PASSWORD
     volumes:
-      - ./certs/user-service-sync:/etc/ssl/user-service-sync:ro
-      - ./certs/ca:/etc/ssl/ca:ro
+      - ./.certs/user-service-sync:/etc/ssl/user-service-sync:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
     healthcheck:
       test: [ "CMD-SHELL", "curl -fsS http://localhost:8081/actuator/health/liveness > /dev/null || exit 1" ]
       interval: 5s
@@ -420,31 +417,27 @@ services:
       dockerfile: user-service-sync/Dockerfile
     container_name: user_service_sync2_container
     environment:
-      - DATA_MONGODB_URI=mongodb://${MONGO_DB_ROOT_USERNAME}:${MONGO_DB_ROOT_PASSWORD}@mongo-db:27017/${MONGO_DB_DATABASE}?authSource=admin&replicaSet=${MONGO_REPLICA_NAME}
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CONSUMER_GROUP_ID=user-events-consumer
+      - MONGO_DB_DATABASE=${MONGO_DB_DATABASE}
+      - MONGO_DB_ROOT_USERNAME=${MONGO_DB_ROOT_USERNAME}
       - USER_EVENTS_TOPIC=${USER_EVENTS_TOPIC}
       - FRIENDSHIP_EVENTS_TOPIC=${FRIENDSHIP_EVENTS_TOPIC}
       - USER_EVENTS_RESPONSE_TOPIC=${USER_EVENTS_RESPONSE_TOPIC}
       - FRIENDSHIP_EVENTS_RESPONSE_TOPIC=${FRIENDSHIP_EVENTS_RESPONSE_TOPIC}
-      - SSL_KEY_PASSWORD=${KEY_PASSWORD}
-      - SSL_KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
-      - SSL_TRUSTSTORE_PASSWORD=${KEYSTORE_PASSWORD}
       - REDIS_HOST=redis
       - MONGO_REPLICA_NAME=${MONGO_REPLICA_NAME}
       - OTEL_SERVICE_NAME=user-service-sync
       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-service-sync-2
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
       - KAFKA_LISTENER_CONCURRENCY=3
-      - >-
-        JAVA_TOOL_OPTIONS=
-        -Djavax.net.ssl.keyStore=/etc/ssl/user-service-sync/user-service-sync.p12
-        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD}
-        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
-        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+    secrets:
+      - MONGO_DB_ROOT_PASSWORD
+      - KEY_PASSWORD
+      - KEYSTORE_PASSWORD
     volumes:
-      - ./certs/user-service-sync:/etc/ssl/user-service-sync:ro
-      - ./certs/ca:/etc/ssl/ca:ro
+      - ./.certs/user-service-sync:/etc/ssl/user-service-sync:ro
+      - ./.certs/ca:/etc/ssl/ca:ro
     healthcheck:
       test: [ "CMD-SHELL", "curl -fsS http://localhost:8081/actuator/health/liveness > /dev/null || exit 1" ]
       interval: 5s
@@ -489,3 +482,17 @@ volumes:
     driver: local
   lgtm_data:
     driver: local
+
+secrets:
+  POSTGRES_PASSWORD:
+    file: ./.secrets/POSTGRES_PASSWORD
+  MONGO_DB_ROOT_PASSWORD:
+    file: ./.secrets/MONGO_DB_ROOT_PASSWORD
+  KEY_PASSWORD:
+    file: ./.secrets/KEY_PASSWORD
+  KEYSTORE_PASSWORD:
+    file: ./.secrets/KEYSTORE_PASSWORD
+  KAFKA_CREDENTIALS_PROPERTIES:
+    file: ./.secrets/kafka-credentials.properties
+  DEBEZIUM_CREDENTIALS_PROPERTIES:
+    file: ./.secrets/debezium-credentials.properties

@@ -6,6 +6,9 @@ DEBEZIUM_URL="http://debezium:8083"
 
 printf "Registering/updating Debezium connectors...\n\n"
 
+POSTGRES_PASSWORD_REF='${fileprovider:/run/secrets/DEBEZIUM_CREDENTIALS_PROPERTIES:POSTGRES_PASSWORD}'
+KEYSTORE_PASSWORD_REF='${fileprovider:/run/secrets/DEBEZIUM_CREDENTIALS_PROPERTIES:KEYSTORE_PASSWORD}'
+
 register_or_update_connector() {
   CONNECTOR_NAME="$1"
   CONFIG="$2"
@@ -47,13 +50,13 @@ USER_CONFIG='{
   "database.hostname": "postgres-db",
   "database.port": "5432",
   "database.user": "'"$POSTGRES_USER"'",
-  "database.password": "'"$POSTGRES_PASSWORD"'",
+  "database.password": "'"$POSTGRES_PASSWORD_REF"'",
   "database.dbname": "'"$POSTGRES_DB"'",
   "database.sslmode": "verify-full",
   "database.sslcert": "/etc/ssl/debezium/debezium.crt",
   "database.sslkey": "/etc/ssl/debezium/debezium.pkcs8.key",
   "database.sslrootcert": "/etc/ssl/ca/ca.crt",
-  "database.sslpassword": "'"$KEYSTORE_PASSWORD"'",
+  "database.sslpassword": "'"$KEYSTORE_PASSWORD_REF"'",
 
   "skipped.operations": "u",
   "topic.prefix": "cdc-users",
@@ -101,13 +104,13 @@ FRIENDSHIP_CONFIG='{
   "database.hostname": "postgres-db",
   "database.port": "5432",
   "database.user": "'"$POSTGRES_USER"'",
-  "database.password": "'"$POSTGRES_PASSWORD"'",
+  "database.password": "'"$POSTGRES_PASSWORD_REF"'",
   "database.dbname": "'"$POSTGRES_DB"'",
   "database.sslmode": "verify-full",
   "database.sslcert": "/etc/ssl/debezium/debezium.crt",
   "database.sslkey": "/etc/ssl/debezium/debezium.pkcs8.key",
   "database.sslrootcert": "/etc/ssl/ca/ca.crt",
-  "database.sslpassword": "'"$KEYSTORE_PASSWORD"'",
+  "database.sslpassword": "'"$KEYSTORE_PASSWORD_REF"'",
 
   "skipped.operations": "u",
   "topic.prefix": "cdc-friendships",

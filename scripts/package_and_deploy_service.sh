@@ -2,31 +2,26 @@
 
 set -euo pipefail
 
-export MONGO_DB_ROOT_USERNAME="db_user"
-export MONGO_DB_ROOT_PASSWORD="db_secure_password"
-export POSTGRES_USER="db_user"
-export POSTGRES_PASSWORD="db_secure_password"
-export KEY_PASSWORD="changeit"
-export KEYSTORE_PASSWORD="changeit"
-
-cleanup() {
-    unset MONGO_DB_ROOT_USERNAME
-    unset MONGO_DB_ROOT_PASSWORD
-    unset POSTGRES_USER
-    unset POSTGRES_PASSWORD
-    unset KEY_PASSWORD
-    unset KEYSTORE_PASSWORD
-}
-
-trap cleanup EXIT
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
 
 SERVICE=$1
-DEBUG="${2:-}"
-DEBUG="${2#DEBUG=}"
+DEBUG="false"
+SECRETS="false"
+
+for arg in "${@:2}"; do
+  [[ "$arg" == DEBUG=* ]] && DEBUG="${arg#DEBUG=}"
+  [[ "$arg" == SECRETS=* ]] && SECRETS="${arg#SECRETS=}"
+done
 
 if [ -z "$SERVICE" ]; then
     echo "Usage: $0 <service>"
     exit 1
+fi
+
+if [ "$SECRETS" = "true" ]; then
+  "$SCRIPT_DIR/create_secrets.sh"
 fi
 
 COMPOSE_ARGS="-f docker-compose.yml"
@@ -51,4 +46,4 @@ if ! printf '%s\n' "$SERVICES" | grep -Fqx -- "$SERVICE"; then
 fi
 
 ./mvnw clean package -DskipTests
-docker compose $COMPOSE_ARGS up --build --no-deps -d "$SERVICE"
+docker compose $COMPOSE_ARGS -p friends up --build --no-deps -d "$SERVICE"

@@ -10,7 +10,9 @@ if [ -z "$PASSWORD" ]; then
 fi
 
 VALIDITY_DAYS=3650
-BASE_DIR="certs"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+BASE_DIR="$PROJECT_ROOT/.certs"
 
 generate_cert() {
     local NAME="$1"
@@ -286,10 +288,9 @@ cat "mongo-healthcheck/mongo-healthcheck.crt" "mongo-healthcheck/mongo-healthche
 popd > /dev/null
 
 echo
-echo "Setting file permissions..."
+echo "Setting directory permissions..."
 
-find "$BASE_DIR" -type f -exec chmod 600 {} \;
-
+find "$BASE_DIR" -type d -exec chmod 700 {} \;
 
 echo "Cleaning up temporary files..."
 

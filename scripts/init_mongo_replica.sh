@@ -4,6 +4,8 @@ set -euo pipefail
 
 printf "Checking and initializing MongoDB replica set..."
 
+MONGO_DB_ROOT_PASSWORD="$(< /run/secrets/MONGO_DB_ROOT_PASSWORD)"
+
 timeout 5 </dev/tcp/mongo-db/27017 2>/dev/null || true
 
 ARG="mongodb://mongo-db:27017/?tls=true&\

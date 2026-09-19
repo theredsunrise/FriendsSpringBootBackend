@@ -10,7 +10,6 @@ import com.example.demo.shared.infrastructure.out.event.UserDeletedIntegrationEv
 import com.example.demo.user.application.port.out.repository.UserRepository;
 import com.example.demo.user.domain.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -31,13 +30,11 @@ public class SpringBootFriendshipService extends FriendshipService implements Fr
     }
 
     @Override
-    @Transactional
     public Friendship add(Friendship friendship) {
         return super.add(friendship);
     }
 
     @Override
-    @Transactional
     public void deleteFromUser(UUID userId, UUID friendId) {
         super.deleteFromUser(userId, friendId);
     }

@@ -24,9 +24,9 @@ public class UserServiceSimulation extends Simulation {
 
     private final ScenarioBuilder createScenario =
             scenario("Create users and friendships")
-                    .exec(UserActions.createUsers(20))
+                    .exec(UserActions.createUsers(20000))
                     .pause(Duration.ofSeconds(5))
-                    .exec(FriendshipActionsForAllUsers.createFriendships())
+                    .exec(FriendshipActionsForOneUser.createFriendships())
                     .pause(Duration.ofSeconds(5));
 
     private final ScenarioBuilder fetchMainScenario =
@@ -52,19 +52,19 @@ public class UserServiceSimulation extends Simulation {
         setUp(
                 createScenario
                         .injectOpen(
-                                atOnceUsers(3)
+                                atOnceUsers(1)
                         )
                         .protocols(httpMainProtocol)
                         .andThen(
                                 fetchMainScenario
                                         .injectOpen(
-                                                atOnceUsers(3)
+                                                atOnceUsers(1)
                                         )
                                         .protocols(httpMainProtocol),
 
                                 fetchReplicaScenario
                                         .injectOpen(
-                                                atOnceUsers(3)
+                                                atOnceUsers(1)
                                         )
                                         .protocols(httpReplicaProtocol)
                         )
