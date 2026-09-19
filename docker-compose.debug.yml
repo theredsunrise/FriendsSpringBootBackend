@@ -1,0 +1,38 @@
+services:
+  gateway:
+    ports:
+      - "5004:5004"
+    environment:
+      #      - LOGGING_LEVEL_ROOT=DEBUG
+      - >-
+        JAVA_TOOL_OPTIONS=
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5004
+        -Djavax.net.ssl.keyStore=/etc/ssl/gateway/gateway.p12
+        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD}
+        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+  user-service:
+    ports:
+      - "5005:5005"
+    environment:
+      #      LOGGING_LEVEL_ROOT: DEBUG
+      - >-
+        JAVA_TOOL_OPTIONS=
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+        -Djavax.net.ssl.keyStore=/etc/ssl/user-service/user-service.p12 
+        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD} 
+        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12 
+        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
+
+  user-service-sync:
+    ports:
+      - "5006:5006"
+    environment:
+      #      LOGGING_LEVEL_ROOT: DEBUG
+      - >-
+        JAVA_TOOL_OPTIONS=
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
+        -Djavax.net.ssl.keyStore=/etc/ssl/user-service-sync/user-service-sync.p12
+        -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD}
+        -Djavax.net.ssl.trustStore=/etc/ssl/ca/ca-truststore.p12
+        -Djavax.net.ssl.trustStorePassword=${KEYSTORE_PASSWORD}
