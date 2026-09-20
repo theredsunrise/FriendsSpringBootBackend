@@ -1,5 +1,4 @@
 target/
 .certs/
 .idea/
-.mongo/
 .secrets/

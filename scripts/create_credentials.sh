@@ -273,6 +273,10 @@ generate_cert \
 
 cat "mongo-db/mongo-db.crt" "mongo-db/mongo-db.key" > "mongo-db/mongo-db.pem"
 
+echo "Generating MongoDB replica-set keyfile..."
+
+openssl rand -base64 512 > "mongo-db/security.keyfile"
+
 echo
 echo "Generating MongoDB healthcheck certificate..."
 

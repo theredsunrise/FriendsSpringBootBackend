@@ -85,11 +85,11 @@ From the repository root, run:
 ./scripts/create_credentials.sh "$(<.secrets/KEYSTORE_PASSWORD)"
 ```
 
-`create_secrets.sh` creates `.secrets` and writes the database and keystore passwords. `create_credentials.sh` creates the development CA, service certificates, PKCS#12 keystores/truststores, PostgreSQL SSL configuration, and Kafka health-check client configuration under `.certs`.
+`create_secrets.sh` creates `.secrets` and writes the database and keystore passwords. `create_credentials.sh` creates the development CA, service certificates, MongoDB replica-set keyfile, PKCS#12 keystores/truststores, PostgreSQL SSL configuration, and Kafka health-check client configuration under `.certs`.
 
 The certificate script regenerates the contents of `.certs`. Do not run it if you need to preserve existing local certificates.
 
-The generated directories are protected with mode `700`. Do not commit `.secrets`, `.certs`, or `.mongo` security material.
+The generated directories are protected with mode `700`. The MongoDB entrypoint applies mode `600` to the replica-set keyfile and certificate files before startup. Do not commit `.secrets` or `.certs` security material.
 
 ## Start the complete stack
 

@@ -190,7 +190,6 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-      - ./.mongo/security.keyfile:/data/security.keyfile
       - ./.certs/mongo-db:/etc/ssl/mongo-db
       - ./.certs/mongo-healthcheck:/etc/ssl/mongo-healthcheck
       - ./.certs/ca:/etc/ssl/ca

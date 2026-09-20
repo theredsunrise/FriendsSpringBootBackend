@@ -15,7 +15,7 @@ register_or_update_connector() {
 
   printf "Processing connector: %s\n" "$CONNECTOR_NAME"
 
-  if curl -fsS "${DEBEZIUM_URL}/connectors/${CONNECTOR_NAME}" >/dev/null 2>&1; then
+  if curl -fsS "${DEBEZIUM_URL}/connectors/${CONNECTOR_NAME}"; then
     printf "Connector exists -> updating configuration...\n"
 
     curl -fsS -X PUT \
