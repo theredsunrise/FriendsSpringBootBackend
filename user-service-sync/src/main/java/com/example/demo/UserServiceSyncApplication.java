@@ -24,4 +24,3 @@ public class UserServiceSyncApplication {
         SpringApplication.run(UserServiceSyncApplication.class, args);
     }
 }
-//test return value kafka

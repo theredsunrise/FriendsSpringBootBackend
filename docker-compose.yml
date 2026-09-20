@@ -26,7 +26,7 @@ services:
         condition: service_healthy
       user-service:
         condition: service_healthy
-      user-service-sync1:
+      user-service-sync:
         condition: service_healthy
     networks:
       - app-network
@@ -362,14 +362,14 @@ services:
     networks:
       - app-network
 
-  user-service-sync1:
-    image: user-service-sync1:latest
+  user-service-sync:
+    image: user-service-sync:latest
     build:
       context: .
       dockerfile: user-service-sync/Dockerfile
-    container_name: user_service_sync1_container
+    scale: 2
     ports:
-      - "8081:8081"
+      - "8081"
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CONSUMER_GROUP_ID=user-events-consumer
@@ -382,53 +382,6 @@ services:
       - REDIS_HOST=redis
       - MONGO_REPLICA_NAME=${MONGO_REPLICA_NAME}
       - OTEL_SERVICE_NAME=user-service-sync
-      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-service-sync-1
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
-      - KAFKA_LISTENER_CONCURRENCY=3
-    secrets:
-      - MONGO_DB_ROOT_PASSWORD
-      - KEY_PASSWORD
-      - KEYSTORE_PASSWORD
-    volumes:
-      - ./.certs/user-service-sync:/etc/ssl/user-service-sync:ro
-      - ./.certs/ca:/etc/ssl/ca:ro
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://localhost:8081/actuator/health/liveness > /dev/null || exit 1" ]
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 6s
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-topic-initializer:
-        condition: service_completed_successfully
-      redis:
-        condition: service_healthy
-      mongo-db-replica_initializer:
-        condition: service_completed_successfully
-    networks:
-      - app-network
-
-  user-service-sync2:
-    image: user-service-sync2:latest
-    build:
-      context: .
-      dockerfile: user-service-sync/Dockerfile
-    container_name: user_service_sync2_container
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - KAFKA_CONSUMER_GROUP_ID=user-events-consumer
-      - MONGO_DB_DATABASE=${MONGO_DB_DATABASE}
-      - MONGO_DB_ROOT_USERNAME=${MONGO_DB_ROOT_USERNAME}
-      - USER_EVENTS_TOPIC=${USER_EVENTS_TOPIC}
-      - FRIENDSHIP_EVENTS_TOPIC=${FRIENDSHIP_EVENTS_TOPIC}
-      - USER_EVENTS_RESPONSE_TOPIC=${USER_EVENTS_RESPONSE_TOPIC}
-      - FRIENDSHIP_EVENTS_RESPONSE_TOPIC=${FRIENDSHIP_EVENTS_RESPONSE_TOPIC}
-      - REDIS_HOST=redis
-      - MONGO_REPLICA_NAME=${MONGO_REPLICA_NAME}
-      - OTEL_SERVICE_NAME=user-service-sync
-      - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-service-sync-2
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
       - KAFKA_LISTENER_CONCURRENCY=3
     secrets:

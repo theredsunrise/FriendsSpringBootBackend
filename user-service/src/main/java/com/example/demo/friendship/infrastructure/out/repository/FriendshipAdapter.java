@@ -129,7 +129,6 @@ public class FriendshipAdapter implements FriendshipRepository {
         return pageResult;
     }
 
-    //test nastavit cesty pre lokalny development
     private void invalidate(String redisPagesKeyTemplate, UUID userId) {
         try {
             String redisPagesKey = redisPagesKeyTemplate.formatted(userId);

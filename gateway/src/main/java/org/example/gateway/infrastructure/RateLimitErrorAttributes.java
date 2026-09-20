@@ -12,7 +12,7 @@ import java.util.Map;
 //@Component
 //public class RateLimitErrorAttributes extends DefaultErrorAttributes {
 //
-//    //test
+//
 //    @Override
 //    public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 //        Map<String, Object> errorAttributes = super.getErrorAttributes(request, options);

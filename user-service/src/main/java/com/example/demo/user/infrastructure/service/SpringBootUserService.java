@@ -16,7 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
-//test zmenit na implements
+//test Try composition over inheritance
 @Service
 public class SpringBootUserService extends UserService implements UserUseCase {
 

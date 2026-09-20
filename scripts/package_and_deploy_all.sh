@@ -21,8 +21,10 @@ COMPOSE_ARGS="-f docker-compose.yml"
 if [ "$DEBUG" = "true" ]; then
   echo "Running in DEBUG mode. Merging docker-compose.debug.yml..."
   COMPOSE_ARGS="$COMPOSE_ARGS -f docker-compose.debug.yml"
+  SCALE_ARGS="--scale user-service-sync=1"
 else
   echo "Running in STANDARD mode."
+  SCALE_ARGS=""
 fi
 
 ./mvnw clean package -DskipTests
@@ -34,4 +36,4 @@ if [ "$RENDER_KEYS" = "true" ]; then
   "$SCRIPT_DIR/create_credentials.sh" "$(<.secrets/KEYSTORE_PASSWORD)"
 fi
 
-docker compose $COMPOSE_ARGS -p friends up --build --remove-orphans -d
+docker compose $COMPOSE_ARGS -p friends up $SCALE_ARGS --build --remove-orphans -d

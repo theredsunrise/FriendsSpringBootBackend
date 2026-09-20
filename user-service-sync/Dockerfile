@@ -7,4 +7,4 @@ USER spring:spring
 
 COPY user-service-sync/target/*.jar app.jar
 
-ENTRYPOINT ["java", "--enable-preview","-jar", "app.jar"]
+ENTRYPOINT ["java", "--enable-preview", "-jar", "app.jar"]

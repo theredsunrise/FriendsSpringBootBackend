@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.util.UUID;
 
-//test dorobit lepsie logovanie
-//test mongo url ma password
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
 

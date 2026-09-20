@@ -134,16 +134,9 @@ public class FriendshipAdapter implements FriendshipRepository {
             String redisPagesKey = redisPagesKeyTemplate.formatted(userId);
             log.info("**** Invalidated cache for user ID {} for key: {}.", userId, redisPagesKey);
             redisTemplate.invalidateByPagesKey(redisPagesKey);
-//            String redisPagesKey = redisPagesKeyTemplate.formatted(userId);
-//            Set<String> keys = redisTemplate.getForSet(redisPagesKey).stream().map(Object::toString).collect(Collectors.toSet());
-//            if (keys != null && !keys.isEmpty()) {
-//                redisTemplate.deleteKeys(keys);
-//            }
-//            redisTemplate.deleteKey(redisPagesKey);
+
         } catch (Exception e) {
             log.warn("**** Failed to invalidate cache for user ID {}.", userId, e);
         }
     }
 }
-
-//test merge debezium user a friendship

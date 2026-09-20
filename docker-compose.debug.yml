@@ -16,7 +16,8 @@ services:
         JAVA_TOOL_OPTIONS=
         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
-  user-service-sync1:
+  user-service-sync:
+    scale: 1
     ports:
       - "5006:5006"
     environment:

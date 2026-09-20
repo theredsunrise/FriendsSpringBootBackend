@@ -29,8 +29,10 @@ COMPOSE_ARGS="-f docker-compose.yml"
 if [ "$DEBUG" = "true" ]; then
   echo "Running in DEBUG mode. Merging docker-compose.debug.yml..."
   COMPOSE_ARGS="$COMPOSE_ARGS -f docker-compose.debug.yml"
+  SCALE_ARGS="--scale user-service-sync=1"
 else
   echo "Running in STANDARD mode."
+  SCALE_ARGS=""
 fi
 
 if ! SERVICES=$(docker compose ${COMPOSE_ARGS} config --services); then
@@ -46,4 +48,4 @@ if ! printf '%s\n' "$SERVICES" | grep -Fqx -- "$SERVICE"; then
 fi
 
 ./mvnw clean package -DskipTests
-docker compose $COMPOSE_ARGS -p friends up --build --no-deps -d "$SERVICE"
+docker compose $COMPOSE_ARGS -p friends up $SCALE_ARGS --build --no-deps -d "$SERVICE"
