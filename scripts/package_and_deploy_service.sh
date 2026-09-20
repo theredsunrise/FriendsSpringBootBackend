@@ -8,20 +8,14 @@ cd "$PROJECT_ROOT"
 
 SERVICE=$1
 DEBUG="false"
-SECRETS="false"
 
 for arg in "${@:2}"; do
   [[ "$arg" == DEBUG=* ]] && DEBUG="${arg#DEBUG=}"
-  [[ "$arg" == SECRETS=* ]] && SECRETS="${arg#SECRETS=}"
 done
 
 if [ -z "$SERVICE" ]; then
     echo "Usage: $0 <service>"
     exit 1
-fi
-
-if [ "$SECRETS" = "true" ]; then
-  "$SCRIPT_DIR/create_secrets.sh"
 fi
 
 COMPOSE_ARGS="-f docker-compose.yml"
