@@ -183,6 +183,9 @@
                     <groupId>io.gatling</groupId>
                     <artifactId>gatling-maven-plugin</artifactId>
                     <version>${gatling-maven-plugin.version}</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.springdoc</groupId>

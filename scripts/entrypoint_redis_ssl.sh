@@ -13,6 +13,18 @@ chown redis:redis /etc/ssl/ca/ca.crt
 chown redis:redis /etc/ssl/redis-healthcheck/redis-healthcheck.key
 chown redis:redis /etc/ssl/redis-healthcheck/redis-healthcheck.crt
 
+cat > /usr/local/bin/redis-cli-tls <<'EOF'
+#!/bin/sh
+exec /usr/local/bin/redis-cli \
+  --tls \
+  --cacert /etc/ssl/ca/ca.crt \
+  --cert /etc/ssl/redis-healthcheck/redis-healthcheck.crt \
+  --key /etc/ssl/redis-healthcheck/redis-healthcheck.key \
+  "$@"
+EOF
+chmod +x /usr/local/bin/redis-cli-tls
+
+chmod +x /usr/local/bin/redis-cli
 exec docker-entrypoint.sh redis-server "$@" \
   --save "" \
   --appendonly no \

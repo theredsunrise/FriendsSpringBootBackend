@@ -120,6 +120,9 @@
             <plugin>
                 <groupId>io.gatling</groupId>
                 <artifactId>gatling-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springdoc</groupId>
@@ -127,5 +130,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

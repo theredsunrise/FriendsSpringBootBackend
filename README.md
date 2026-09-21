@@ -144,8 +144,8 @@ Start the complete stack first. The Gatling simulation sends requests through th
 Run the simulation from the repository root:
 
 ```bash
-./mvnw -pl user-service gatling:test \
-  -Dgatling.simulationClass=com.example.demo.userServicePerformance.UserServiceSimulation
+./mvnw -pl user-service -am gatling:test \
+  -Dgatling.simulationClass=com.example.demo.userServicePerformance.UserServiceSimulation  
 ```
 
 The simulation currently:

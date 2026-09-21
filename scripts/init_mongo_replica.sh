@@ -6,7 +6,7 @@ printf "Checking and initializing MongoDB replica set..."
 
 MONGO_DB_ROOT_PASSWORD="$(< /run/secrets/MONGO_DB_ROOT_PASSWORD)"
 
-timeout 5 </dev/tcp/mongo-db/27017
+timeout 5 bash -c 'echo > /dev/tcp/mongo-db/27017'
 
 ARG="mongodb://mongo-db:27017/?tls=true&\
 tlsCAFile=/etc/ssl/ca/ca.crt&\
