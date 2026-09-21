@@ -9,12 +9,15 @@ services:
     ports:
       - "443:443"
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - DATA_REDIS_HOST=redis
       - DATA_REDIS_PORT=6379
       - DATA_REDIS_DATABASE=0
       - OTEL_SERVICE_NAME=gateway
       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=user-gateway-1
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
+      - GATEWAY_KEYSTORE_LOCATION=/etc/ssl/gateway/gateway.p12
+      - CA_TRUSTSTORE_LOCATION=/etc/ssl/ca/ca-truststore.p12
     secrets:
       - KEY_PASSWORD
       - KEYSTORE_PASSWORD
@@ -324,6 +327,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
@@ -336,6 +340,11 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
       - REDIS_HOST=redis
       - KAFKA_LISTENER_CONCURRENCY=3
+      - USER_SERVICE_KEYSTORE_LOCATION=/etc/ssl/user-service/user-service.p12
+      - USER_SERVICE_CERT_LOCATION=/etc/ssl/user-service/user-service.crt
+      - USER_SERVICE_KEY_LOCATION=/etc/ssl/user-service/user-service.key
+      - CA_TRUSTSTORE_LOCATION=/etc/ssl/ca/ca-truststore.p12
+      - CA_CERT_LOCATION=/etc/ssl/ca/ca.crt
     secrets:
       - POSTGRES_PASSWORD
       - KEY_PASSWORD
@@ -370,6 +379,7 @@ services:
     ports:
       - "8081"
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CONSUMER_GROUP_ID=user-events-consumer
       - MONGO_DB_DATABASE=${MONGO_DB_DATABASE}
@@ -383,6 +393,8 @@ services:
       - OTEL_SERVICE_NAME=user-service-sync
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm-grafana:4318
       - KAFKA_LISTENER_CONCURRENCY=3
+      - USER_SERVICE_SYNC_KEYSTORE_LOCATION=/etc/ssl/user-service-sync/user-service-sync.p12
+      - CA_TRUSTSTORE_LOCATION=/etc/ssl/ca/ca-truststore.p12
     secrets:
       - MONGO_DB_ROOT_PASSWORD
       - KEY_PASSWORD

@@ -33,7 +33,8 @@ if [ "$SECRETS" = "true" ]; then
   "$SCRIPT_DIR/create_secrets.sh"
 fi
 if [ "$RENDER_KEYS" = "true" ]; then
-  "$SCRIPT_DIR/create_credentials.sh" "$(<.secrets/KEYSTORE_PASSWORD)"
+  POSTGRES_USER="$(grep '^POSTGRES_USER=' .env | cut -d'=' -f2-)"
+  "$SCRIPT_DIR/create_credentials.sh" "$(<.secrets/KEYSTORE_PASSWORD)" "$POSTGRES_USER"
 fi
 
 docker compose $COMPOSE_ARGS -p friends up $SCALE_ARGS --build --remove-orphans -d

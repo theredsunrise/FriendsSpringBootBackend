@@ -2,10 +2,11 @@
 
 set -euo pipefail
 
-PASSWORD=$1
+PASSWORD=${1:-}
+POSTGRES_USER=${2:-}
 
-if [ -z "$PASSWORD" ]; then
-    echo "Usage: $0 <password>"
+if [ -z "$PASSWORD" ] || [ -z "$POSTGRES_USER" ]; then
+    echo "Usage: $0 <password> <POSTGRES_USER>"
     exit 1
 fi
 
@@ -256,10 +257,10 @@ hostssl all             all             ::/0            cert clientcert=verify-f
 EOF
 
 cat > "postgres-db/pg_ident.conf" <<EOF
-friends_ssl_map    debezium                            db_user
-friends_ssl_map    user-service                        db_user
-friends_ssl_map    kafka                               db_user
-friends_ssl_map    kafka-healthcheck                   db_user
+friends_ssl_map    debezium                            $POSTGRES_USER
+friends_ssl_map    user-service                        $POSTGRES_USER
+friends_ssl_map    kafka                               $POSTGRES_USER
+friends_ssl_map    kafka-healthcheck                   $POSTGRES_USER
 EOF
 
 echo

@@ -82,10 +82,12 @@ From the repository root, run:
 
 ```bash
 ./scripts/create_secrets.sh
-./scripts/create_credentials.sh "$(<.secrets/KEYSTORE_PASSWORD)"
+./scripts/create_credentials.sh "$(<.secrets/KEYSTORE_PASSWORD)" "$(rg '^POSTGRES_USER=' .env | cut -d= -f2-)"
 ```
 
-`create_secrets.sh` creates `.secrets` and writes the database and keystore passwords. `create_credentials.sh` creates the development CA, service certificates, MongoDB replica-set keyfile, PKCS#12 keystores/truststores, PostgreSQL SSL configuration, and Kafka health-check client configuration under `.certs`.
+The second argument is the PostgreSQL username from `POSTGRES_USER` in `.env`. It is used when generating PostgreSQL's `pg_ident.conf`, so the certificate identity map matches the configured database user.
+
+`create_secrets.sh` creates `.secrets` and writes the database and keystore passwords. `create_credentials.sh <keystore_password> <postgresql_user_name>` creates the development CA, service certificates, MongoDB replica-set keyfile, PKCS#12 keystores/truststores, PostgreSQL SSL configuration, and Kafka health-check client configuration under `.certs`.
 
 The certificate script regenerates the contents of `.certs`. Do not run it if you need to preserve existing local certificates.
 
@@ -187,7 +189,7 @@ Stop containers and remove Compose volumes with:
 This removes the Docker Compose volumes, including PostgreSQL, MongoDB, Kafka, and LGTM data. The local certificate and secret directories are not removed. To regenerate certificates after cleanup, run:
 
 ```bash
-./scripts/create_credentials.sh "$(<.secrets/KEYSTORE_PASSWORD)"
+./scripts/create_credentials.sh "$(<.secrets/KEYSTORE_PASSWORD)" "$(rg '^POSTGRES_USER=' .env | cut -d= -f2-)"
 ```
 
 ## Observability
