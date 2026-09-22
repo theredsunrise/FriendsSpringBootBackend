@@ -9,7 +9,6 @@ import org.springframework.cache.annotation.EnableCaching;
 
 
 @SpringBootApplication
-@EnableCaching
 @EnableConfigurationProperties(RedisCacheProperties.class)
 public class UserServiceApplication {
 

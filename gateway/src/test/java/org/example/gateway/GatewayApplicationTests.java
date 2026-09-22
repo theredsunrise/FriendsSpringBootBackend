@@ -7,8 +7,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @SpringBootTest
 class GatewayApplicationTests {
-
-
     @Test
     void contextLoads() {
     }

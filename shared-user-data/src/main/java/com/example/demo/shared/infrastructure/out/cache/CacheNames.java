@@ -1,4 +1,4 @@
-package com.example.demo.shared.infrastructure.out.repository.cache;
+package com.example.demo.shared.infrastructure.out.cache;
 
 public final class CacheNames {
 

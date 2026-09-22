@@ -19,12 +19,12 @@ public class FriendshipActionsForOneUser {
 
             List<String> userIds = session.getList("userIds");
 
-            if (userIds == null || userIds.isEmpty() || userIds.get(0) == null) {
+            if (userIds == null || userIds.isEmpty() || userIds.getFirst() == null) {
                 log.warn("CREATE FRIENDSHIPS | userIds is null or empty");
                 return session;
             }
 
-            return session.set("mainUserId", userIds.get(0));
+            return session.set("mainUserId", userIds.getFirst());
         })
 
                 .foreach(
@@ -74,12 +74,12 @@ public class FriendshipActionsForOneUser {
     }
 
     public static ChainBuilder deleteFriendships(List<String> ids) {
-        if (ids == null || ids.isEmpty() || ids.get(0) == null) {
+        if (ids == null || ids.isEmpty() || ids.getFirst() == null) {
             log.warn("DELETE FRIENDSHIPS | userIds is null or empty");
             return exec(session -> session);
         }
 
-        String mainUserId = ids.get(0);
+        String mainUserId = ids.getFirst();
         return foreach(
                 session -> ids,
                 "friendId"

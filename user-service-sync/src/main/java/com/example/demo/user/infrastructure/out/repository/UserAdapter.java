@@ -3,7 +3,7 @@ package com.example.demo.user.infrastructure.out.repository;
 import com.example.demo.shared.application.port.in.Page;
 import com.example.demo.shared.application.port.in.PageResult;
 import com.example.demo.shared.infrastructure.out.openTelemetry.ObservationPredicateConfig;
-import com.example.demo.shared.infrastructure.out.repository.cache.CacheNames;
+import com.example.demo.shared.infrastructure.out.cache.CacheNames;
 import com.example.demo.user.application.port.out.repository.UserRepository;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.infrastructure.out.repository.dto.UserMongoEntity;

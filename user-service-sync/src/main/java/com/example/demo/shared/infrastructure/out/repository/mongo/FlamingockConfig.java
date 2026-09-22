@@ -1,4 +1,4 @@
-package com.example.demo.shared.infrastructure.out.repository;
+package com.example.demo.shared.infrastructure.out.repository.mongo;
 
 import io.flamingock.store.mongodb.sync.MongoDBSyncAuditStore;
 import io.flamingock.targetsystem.mongodb.springdata.MongoDBSpringDataTargetSystem;

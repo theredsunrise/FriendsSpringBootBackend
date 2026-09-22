@@ -3,9 +3,9 @@ package com.example.demo.user.domain;
 import com.example.demo.user.application.exception.UserException;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.io.Serializable;
 import java.util.UUID;
 
 @Getter
@@ -30,10 +30,9 @@ public class User implements Serializable {
                  LocalDate birthDate,
                  String residence,
                  Instant createdAt) {
-        if(createdAt == null) {
+        if (createdAt == null) {
             createdAt = Instant.now();
         }
-
         if (name == null || name.isBlank()) {
             throw new UserException("Name cannot be null or empty.");
         }

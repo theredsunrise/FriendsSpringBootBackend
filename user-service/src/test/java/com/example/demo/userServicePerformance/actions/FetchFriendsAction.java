@@ -17,7 +17,7 @@ public class FetchFriendsAction {
 
         return exec(session -> {
             List<String> userIds = SharedTestData.USER_IDS.get();
-            if (userIds == null || userIds.isEmpty() || userIds.get(0) == null) {
+            if (userIds == null || userIds.isEmpty() || userIds.getFirst() == null) {
                 log.warn("FETCH FRIENDS | userIds is null or empty");
                 return session
                         .set("hasNextPage", false);
@@ -25,7 +25,7 @@ public class FetchFriendsAction {
 
             return session
                     .set("userIds", userIds)
-                    .set("fetchUserId", userIds.get(0))
+                    .set("fetchUserId", userIds.getFirst())
                     .set("token", "")
                     .set("hasNextPage", true);
 

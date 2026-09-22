@@ -11,13 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,28 +31,16 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@DataJpaTest(properties = {
-        "spring.flyway.enabled=true",
-        "spring.jpa.hibernate.ddl-auto=none",
-        "spring.datasource.hikari.data-source-properties.ssl=false",
-        "spring.datasource.hikari.data-source-properties.sslmode=disable",
-        "spring.flyway.jdbc-properties.ssl=false",
-        "spring.flyway.jdbc-properties.sslmode=disable"
-})
+@ActiveProfiles("test")
+@DataJpaTest()
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EntityScan("com.example.demo")
 @Import({
         UserAdapter.class,
-        UserJpaMapperImpl.class,
-        UserAdapterPostgresPagingTest.CacheTestConfiguration.class
+        UserJpaMapperImpl.class
 })
 @Testcontainers
 class UserAdapterPostgresPagingTest {
-
-    private static final String DATABASE = "user_database";
-    private static final String USERNAME = "db_user";
-    private static final String PASSWORD = "db_secure_password";
 
     private static final LocalDate DEFAULT_BIRTH_DATE =
             LocalDate.of(1990, 1, 1);
@@ -67,20 +51,7 @@ class UserAdapterPostgresPagingTest {
     @ServiceConnection
     static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:16-alpine")
-                    .withDatabaseName(DATABASE)
-                    .withUsername(USERNAME)
-                    .withPassword(PASSWORD)
                     .withCommand("postgres", "-c", "wal_level=logical");
-
-    @TestConfiguration(proxyBeanMethods = false)
-    @EnableCaching
-    static class CacheTestConfiguration {
-
-        @Bean
-        CacheManager cacheManager() {
-            return new ConcurrentMapCacheManager();
-        }
-    }
 
     @Autowired
     private UserAdapter userAdapter;

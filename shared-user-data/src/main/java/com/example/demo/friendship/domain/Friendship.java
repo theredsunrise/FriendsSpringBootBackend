@@ -4,8 +4,8 @@ import com.example.demo.friendship.application.exception.FriendshipWithSelfExcep
 import com.example.demo.user.application.exception.UserException;
 import lombok.*;
 
-import java.time.Instant;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter

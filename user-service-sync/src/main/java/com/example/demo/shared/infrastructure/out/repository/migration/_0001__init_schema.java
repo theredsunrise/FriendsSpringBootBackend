@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 
-import static com.example.demo.shared.infrastructure.out.repository.FlamingockConfig.MONGO_SCHEMA_ID;
-import static com.example.demo.shared.infrastructure.out.repository.FlamingockConfig.MONGO_TARGET_SYSTEM_ID;
+import static com.example.demo.shared.infrastructure.out.repository.mongo.FlamingockConfig.MONGO_SCHEMA_ID;
+import static com.example.demo.shared.infrastructure.out.repository.mongo.FlamingockConfig.MONGO_TARGET_SYSTEM_ID;
 
 @TargetSystem(id = MONGO_TARGET_SYSTEM_ID)
 @Change(id = MONGO_SCHEMA_ID, author = "developer", transactional = false)
