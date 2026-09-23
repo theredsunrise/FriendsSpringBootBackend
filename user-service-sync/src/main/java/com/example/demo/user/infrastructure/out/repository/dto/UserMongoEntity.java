@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Document(collection = "users")
 @Getter
@@ -23,7 +22,8 @@ public class UserMongoEntity implements UserProjection {
     @EqualsAndHashCode.Include
     private ObjectId id;
 
-    private UUID uuid;
+    @Field("user_id")
+    private Long userId;
 
     private String name;
 

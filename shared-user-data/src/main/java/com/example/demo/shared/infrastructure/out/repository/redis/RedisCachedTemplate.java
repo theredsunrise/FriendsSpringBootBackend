@@ -68,19 +68,19 @@ public class RedisCachedTemplate {
                 local cursor = "0"
                 local deleted = 0
                 local batchSize = 500
-                
+
                 repeat
                     local result = redis.call('SSCAN', KEYS[1], cursor, 'COUNT', batchSize)
                     cursor = result[1]
                     local keys = result[2]
-                
+
                     if #keys > 0 then
                         deleted = deleted + redis.call('UNLINK', unpack(keys))
                     end
                 until cursor == "0"
-                
+
                 deleted = deleted + redis.call('UNLINK', KEYS[1])
-                
+
                 return deleted
                 """;
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
@@ -121,4 +121,3 @@ public class RedisCachedTemplate {
         return redisTemplate.delete(keys);
     }
 }
-

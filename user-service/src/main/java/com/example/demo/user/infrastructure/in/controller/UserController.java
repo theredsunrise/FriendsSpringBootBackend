@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 
 @RestController
@@ -67,7 +66,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an existing user by ID")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         OpenTelemetryHelper.setMyTag("user-delete");
         useCase.delete(id);
 

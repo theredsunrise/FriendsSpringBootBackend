@@ -19,7 +19,7 @@ public class _0001__init_schema {
 
     private static final String USERS_COLLECTION_NAME = "users";
     private static final String USERS_USERNAME_INDEX_NAME = "idx_users_username";
-    private static final String USERS_UUID_INDEX_NAME = "idx_users_uuid";
+    private static final String USERS_ID_INDEX_NAME = "idx_users_id";
     private static final String USERS_CREATED_AT_INDEX_NAME = "idx_users_created_at";
 
     private static final String FRIENDSHIP_COLLECTION_NAME = "friendships";
@@ -43,9 +43,9 @@ public class _0001__init_schema {
                 .named(USERS_USERNAME_INDEX_NAME)
                 .unique();
 
-        Index uuidIndex = new Index()
-                .on("uuid", Sort.Direction.ASC)
-                .named(USERS_UUID_INDEX_NAME);
+        Index idIndex = new Index()
+                .on("user_id", Sort.Direction.ASC)
+                .named(USERS_ID_INDEX_NAME);
 
         Index createdAtIndex = new Index()
                 .on("created_at", Sort.Direction.DESC)
@@ -53,7 +53,7 @@ public class _0001__init_schema {
 
         IndexOperations indexOps = mongoTemplate.indexOps(USERS_COLLECTION_NAME);
         indexOps.createIndex(usernameIndex);
-        indexOps.createIndex(uuidIndex);
+        indexOps.createIndex(idIndex);
         indexOps.createIndex(createdAtIndex);
     }
 
@@ -63,7 +63,7 @@ public class _0001__init_schema {
         }
 
         Index userIndex = new Index()
-                .on("id_user", Sort.Direction.ASC)
+                .on("user_id", Sort.Direction.ASC)
                 .named(FRIENDSHIP_USER_INDEX_NAME);
 
 
@@ -76,6 +76,9 @@ public class _0001__init_schema {
                 .named(FRIENDSHIP_CREATED_AT_INDEX_NAME);
 
         IndexOperations indexOps = mongoTemplate.indexOps(FRIENDSHIP_COLLECTION_NAME);
+        indexOps.createIndex(new Index()
+                .on("friendship_id", Sort.Direction.DESC)
+                .named("idx_friendships_id"));
         indexOps.createIndex(userIndex);
         indexOps.createIndex(friendIndex);
         indexOps.createIndex(createdAtIndex);

@@ -34,7 +34,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -108,7 +107,7 @@ class FriendshipAdapterTest {
         var usersDto = IntStream.range(0, 10)
                 .mapToObj(index ->
                         User.builder()
-                                .id(UUID.randomUUID())
+                                .id(java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE))
                                 .name("Name" + index)
                                 .surname("Surname" + index)
                                 .username("Username" + index)
@@ -128,7 +127,7 @@ class FriendshipAdapterTest {
 
     private Friendship friendship(int userIndex, int friendIndex) {
         return Friendship.builder()
-                .id(UUID.randomUUID())
+                .id(java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE))
                 .userId(users.get(userIndex).getId())
                 .friendId(users.get(friendIndex).getId())
                 .build();
@@ -136,7 +135,7 @@ class FriendshipAdapterTest {
 
     private Friendship friendship(int userIndex, int friendIndex, Instant createAt) {
         return Friendship.builder()
-                .id(UUID.randomUUID())
+                .id(java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE))
                 .userId(users.get(userIndex).getId())
                 .friendId(users.get(friendIndex).getId())
                 .createdAt(createAt)

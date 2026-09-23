@@ -21,7 +21,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 import static com.example.demo.shared.infrastructure.in.event.KafkaTemplateConfig.JSON_TEMPLATE;
 import static com.example.demo.shared.infrastructure.in.event.KafkaTemplateConfig.STRING_TEMPLATE;
@@ -64,8 +63,8 @@ public class KafkaFriendshipEventConsumer {
         Friendship friendship;
         OutBoxEventType event;
         Long outboxId = null;
-        UUID userId = null;
-        UUID friendId = null;
+        Long userId = null;
+        Long friendId = null;
 
         try {
             outboxId = Long.valueOf(outboxIdStr);
@@ -124,8 +123,8 @@ public class KafkaFriendshipEventConsumer {
             String errorMessage) {
 
         Long outboxId = null;
-        UUID userId = null;
-        UUID friendId = null;
+        Long userId = null;
+        Long friendId = null;
 
         log.error("**** Dead letter friendship record occurred: Outbox ID:{}, event type:{}, error: {}", outboxIdStr, eventType, errorMessage);
         try {

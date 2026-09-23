@@ -24,7 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -81,7 +80,7 @@ class UserAdapterPostgresPagingTest {
         assertEquals(3, firstPage.content().size());
         assertTrue(firstPage.hasNext());
 
-        Set<UUID> insertedUserIds = Stream.of(
+        Set<Long> insertedUserIds = Stream.of(
                         user(100, baseTime.plusSeconds(1)),
                         user(101, baseTime.plusSeconds(2))
                 )
@@ -89,7 +88,7 @@ class UserAdapterPostgresPagingTest {
                 .map(User::getId)
                 .collect(Collectors.toSet());
 
-        Set<UUID> seenUserIds = new LinkedHashSet<>(
+        Set<Long> seenUserIds = new LinkedHashSet<>(
                 firstPage.content().stream()
                         .map(User::getId)
                         .toList()
@@ -100,7 +99,7 @@ class UserAdapterPostgresPagingTest {
         while (page != null && page.token() != null) {
             PageResult<User> result = userAdapter.findAll(page);
 
-            List<UUID> pageUserIds = result.content().stream()
+            List<Long> pageUserIds = result.content().stream()
                     .map(User::getId)
                     .toList();
 
@@ -154,7 +153,7 @@ class UserAdapterPostgresPagingTest {
 
             if (previous.getCreatedAt().equals(current.getCreatedAt())) {
                 assertTrue(
-                        compareUuid(previous.getId(), current.getId()) < 0,
+                        compareId(previous.getId(), current.getId()) < 0,
                         "Users with the same createdAt are not ordered by id ascending"
                 );
             }
@@ -188,7 +187,7 @@ class UserAdapterPostgresPagingTest {
 
     @Test
     void shouldReturnEmptyWhenUserDoesNotExist() {
-        assertTrue(userAdapter.getById(UUID.randomUUID()).isEmpty());
+        assertTrue(userAdapter.getById(java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE)).isEmpty());
     }
 
     @Test
@@ -210,24 +209,12 @@ class UserAdapterPostgresPagingTest {
         assertTrue(userAdapter.existsById(savedUser.getId()));
         assertTrue(userAdapter.existsByUsername(savedUser.getUsername()));
 
-        assertFalse(userAdapter.existsById(UUID.randomUUID()));
+        assertFalse(userAdapter.existsById(java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE)));
         assertFalse(userAdapter.existsByUsername("missing-username"));
     }
 
-    private static int compareUuid(UUID left, UUID right) {
-        int mostSignificantBits = Long.compareUnsigned(
-                left.getMostSignificantBits(),
-                right.getMostSignificantBits()
-        );
-
-        if (mostSignificantBits != 0) {
-            return mostSignificantBits;
-        }
-
-        return Long.compareUnsigned(
-                left.getLeastSignificantBits(),
-                right.getLeastSignificantBits()
-        );
+    private static int compareId(Long left, Long right) {
+        return Long.compare(left, right);
     }
 
     private static User user(int index, Instant createdAt) {

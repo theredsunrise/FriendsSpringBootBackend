@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 public record Page(String token, int size) implements Serializable {
@@ -21,7 +20,7 @@ public record Page(String token, int size) implements Serializable {
         public static final Keys CREATED_AT_AND_ID = new Keys("createdAt", "id");
     }
 
-    public record Params(Instant time, UUID id) implements Serializable {
+    public record Params(Instant time, Long id) implements Serializable {
     }
 
     public KeysetScrollPosition parseTimeAndIdScrollPosition(Keys keys) {
@@ -47,11 +46,10 @@ public record Page(String token, int size) implements Serializable {
             }
             String[] parts = token.split("_");
             Instant time = Instant.parse(parts[0]);
-            UUID id = UUID.fromString(parts[1]);
+            Long id = Long.parseLong(parts[1]);
             return new Params(time, id);
         } catch (Exception e) {
             throw new InvalidSearchTokenException("Invalid token.");
         }
     }
 }
-

@@ -17,7 +17,6 @@ import com.example.demo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class FriendshipService implements FriendshipUseCase {
@@ -38,7 +37,7 @@ public class FriendshipService implements FriendshipUseCase {
     }
 
     @Override
-    public void addToUser(UUID userId, UUID friendId) {
+    public void addToUser(Long userId, Long friendId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("User with ID: %s does not exist.".formatted(userId));
         }
@@ -62,7 +61,7 @@ public class FriendshipService implements FriendshipUseCase {
     }
 
     @Override
-    public void deleteFromUser(UUID userId, UUID friendId) {
+    public void deleteFromUser(Long userId, Long friendId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("User with ID: %s does not exist.".formatted(userId));
         }
@@ -90,7 +89,7 @@ public class FriendshipService implements FriendshipUseCase {
     }
 
     @Override
-    public PageResult<User> findAllFriends(UUID userId, Page page) {
+    public PageResult<User> findAllFriends(Long userId, Page page) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(String.format("User with ID: %s was not found.", userId));
         }

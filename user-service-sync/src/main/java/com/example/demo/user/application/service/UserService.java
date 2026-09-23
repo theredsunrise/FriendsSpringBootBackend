@@ -9,7 +9,6 @@ import com.example.demo.user.application.port.out.repository.UserRepository;
 import com.example.demo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
@@ -26,7 +25,7 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public void delete(UUID userId) {
+    public void delete(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(String.format("User with ID: %s was not found.", userId));
         }

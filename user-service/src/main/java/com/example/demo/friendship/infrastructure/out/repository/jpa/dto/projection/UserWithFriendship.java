@@ -5,12 +5,11 @@ import lombok.Getter;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
 public class UserWithFriendship implements UserProjectionWithFriendshipProjection {
-    private UUID id;
+    private Long id;
     private String name;
     private String surname;
     private String username;

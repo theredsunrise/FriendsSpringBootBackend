@@ -2,8 +2,8 @@ package com.example.demo.user.infrastructure.out.repository;
 
 import com.example.demo.shared.application.port.in.Page;
 import com.example.demo.shared.application.port.in.PageResult;
-import com.example.demo.shared.infrastructure.out.openTelemetry.ObservationPredicateConfig;
 import com.example.demo.shared.infrastructure.out.cache.CacheNames;
+import com.example.demo.shared.infrastructure.out.openTelemetry.ObservationPredicateConfig;
 import com.example.demo.user.application.port.out.repository.UserRepository;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.infrastructure.out.repository.dto.UserMongoEntity;
@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,8 +39,8 @@ public class UserAdapter implements UserRepository {
 
     @Override
     @Observed(name = "user-exist-id", contextualName = "user-exist-id")
-    public boolean existsById(UUID userId) {
-        return repository.existsByUuid(userId);
+    public boolean existsById(Long userId) {
+        return repository.existsByUserId(userId);
     }
 
     @Override
@@ -53,15 +52,15 @@ public class UserAdapter implements UserRepository {
     @Override
     @Observed(name = "user-exist-id", contextualName = "user-exist-id")
     @Cacheable(value = CacheNames.USER_BY_ID, key = "#a0")
-    public Optional<User> getById(UUID userId) {
-        return repository.findByUuid(userId).map(mapper::toDomain);
+    public Optional<User> getById(Long userId) {
+        return repository.findByUserId(userId).map(mapper::toDomain);
     }
 
     @Override
     @CacheEvict(value = CacheNames.USER_BY_ID, key = "#a0")
     @Observed(name = "user-delete-id", contextualName = "user-delete-id")
-    public void deleteById(UUID userId) {
-        repository.deleteByUuid(userId);
+    public void deleteById(Long userId) {
+        repository.deleteByUserId(userId);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class UserAdapter implements UserRepository {
         Page.Params params = page.tokenToTimeAndId();
 
         Slice<UserMongoEntity> result = repository.findAll(
-                params == null ? UUID.randomUUID() : params.id(),
+                params == null ? java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE) : params.id(),
                 params == null ? Instant.now().plus(1, ChronoUnit.DAYS) : params.time(),
                 Pageable.ofSize(page.size()));
 

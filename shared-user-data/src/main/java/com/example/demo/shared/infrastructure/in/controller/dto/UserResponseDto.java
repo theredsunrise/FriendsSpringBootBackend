@@ -4,11 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record UserResponseDto(
-        @Schema(description = "Unique identifier of the user", example = "3fa85f64-5717-4562-b3fc-2c963f66afa8")
-        UUID id,
+        @Schema(description = "Numeric identifier of the user", example = "101")
+        Long id,
         @Schema(description = "Name of the user", example = "John")
         String name,
         @Schema(description = "Surname of the user", example = "Doe")

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.util.UUID;
 
 @Service
 public class SpringBootFriendshipService extends FriendshipService implements FriendshipUseCase {
@@ -35,7 +34,7 @@ public class SpringBootFriendshipService extends FriendshipService implements Fr
     }
 
     @Override
-    public void deleteFromUser(UUID userId, UUID friendId) {
+    public void deleteFromUser(Long userId, Long friendId) {
         super.deleteFromUser(userId, friendId);
     }
 
@@ -45,7 +44,7 @@ public class SpringBootFriendshipService extends FriendshipService implements Fr
     }
 
     @Override
-    public PageResult<User> findAllFriends(UUID userId, Page page) {
+    public PageResult<User> findAllFriends(Long userId, Page page) {
         return super.findAllFriends(userId, page);
     }
 }

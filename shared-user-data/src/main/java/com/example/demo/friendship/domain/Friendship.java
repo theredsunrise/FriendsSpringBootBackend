@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 
 @Getter
 @Builder(toBuilder = true)
@@ -15,12 +14,12 @@ import java.util.UUID;
 public class Friendship implements Serializable {
 
     @EqualsAndHashCode.Include
-    private UUID id;
-    private UUID userId;
-    private UUID friendId;
+    private Long id;
+    private Long userId;
+    private Long friendId;
     private Instant createdAt;
 
-    private Friendship(UUID id, UUID userId, UUID friendId, Instant createdAt) {
+    private Friendship(Long id, Long userId, Long friendId, Instant createdAt) {
         if (createdAt == null) {
             createdAt = Instant.now();
         }
@@ -37,4 +36,3 @@ public class Friendship implements Serializable {
         this.createdAt = createdAt;
     }
 }
-

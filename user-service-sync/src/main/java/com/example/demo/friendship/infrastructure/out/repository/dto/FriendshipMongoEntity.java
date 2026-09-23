@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Document(collection = "friendships")
 @Getter
@@ -22,13 +21,14 @@ public class FriendshipMongoEntity {
     @EqualsAndHashCode.Include
     private ObjectId id;
 
-    private UUID uuid;
+    @Field("friendship_id")
+    private Long friendshipId;
 
-    @Field("id_user")
-    private UUID userId;
+    @Field("user_id")
+    private Long userId;
 
     @Field("id_friend")
-    private UUID friendId;
+    private Long friendId;
 
     @Field("created_at")
     private Instant createdAt;

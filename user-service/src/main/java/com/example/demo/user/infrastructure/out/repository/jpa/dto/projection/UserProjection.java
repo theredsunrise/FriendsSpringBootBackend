@@ -7,11 +7,10 @@ import jakarta.persistence.Id;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public interface UserProjection {
 
-     UUID getId();
+     Long getId();
 
      String getName();
 

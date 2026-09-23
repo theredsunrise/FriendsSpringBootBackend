@@ -25,7 +25,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -82,9 +81,17 @@ class FriendshipAdapterCacheInvalidationTest {
 
     @Test
     void invalidatesBothCacheFamiliesForTenUsersInParallel() throws Exception {
-        List<UUID> userIds = List.of(
-                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+        List<Long> userIds = List.of(
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE),
+                java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE));
 
         userIds.forEach(this::seedCacheForUser);
         CountDownLatch start = new CountDownLatch(1);
@@ -106,8 +113,8 @@ class FriendshipAdapterCacheInvalidationTest {
 
     @Test
     void saveInvalidatesBothCacheFamiliesForBothUsers() {
-        UUID userId = UUID.randomUUID();
-        UUID friendId = UUID.randomUUID();
+        Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+        Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
         Friendship friendship = friendship(userId, friendId);
         FriendshipMongoEntity savedEntity = new FriendshipMongoEntity();
 
@@ -125,8 +132,8 @@ class FriendshipAdapterCacheInvalidationTest {
 
     @Test
     void deleteInvalidatesBothCacheFamiliesForBothUsers() {
-        UUID userId = UUID.randomUUID();
-        UUID friendId = UUID.randomUUID();
+        Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+        Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
         seedCacheForUser(userId);
         seedCacheForUser(friendId);
@@ -137,14 +144,14 @@ class FriendshipAdapterCacheInvalidationTest {
         assertCacheEmptyForUser(friendId);
     }
 
-    private void seedCacheForUser(UUID userId) {
+    private void seedCacheForUser(Long userId) {
         cachedRedisTemplate.addPagesKeyData(
                 FRIENDS_PAGES_KEY.formatted(userId),
                 FRIENDS_KEY.formatted(userId, "seed", 10),
                 "friends-data");
     }
 
-    private void assertCacheEmptyForUser(UUID userId) {
+    private void assertCacheEmptyForUser(Long userId) {
         assertNull(cachedRedisTemplate.getForValue(FRIENDS_KEY.formatted(userId, "seed", 10)));
         assertEmpty(cachedRedisTemplate.getForSet(FRIENDS_PAGES_KEY.formatted(userId)));
     }
@@ -153,9 +160,9 @@ class FriendshipAdapterCacheInvalidationTest {
         assertEquals(Set.of(), values == null ? Set.of() : values);
     }
 
-    private Friendship friendship(UUID userId, UUID friendId) {
+    private Friendship friendship(Long userId, Long friendId) {
         return Friendship.builder()
-                .id(UUID.randomUUID())
+                .id(java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE))
                 .userId(userId)
                 .friendId(friendId)
                 .build();

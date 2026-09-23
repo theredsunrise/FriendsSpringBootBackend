@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 //test Try composition over inheritance
 @Service
@@ -43,13 +42,13 @@ public class SpringBootUserService extends UserService implements UserUseCase {
 
     @Override
     @Transactional
-    public void delete(UUID userId) {
+    public void delete(Long userId) {
         super.delete(userId);
         eventPublisher.publishEvent(new UserDeletedIntegrationEvent(userId));
     }
 
     @Override
-    public User getById(UUID userId) {
+    public User getById(Long userId) {
         return super.getById(userId);
     }
 

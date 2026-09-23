@@ -8,27 +8,26 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public interface SpringDataFriendshipRepository
-        extends JpaRepository<FriendshipJpaEntity, UUID> {
+        extends JpaRepository<FriendshipJpaEntity, Long> {
 
-    void deleteByUserIdAndFriendId(UUID userId, UUID friendId);
+    void deleteByUserIdAndFriendId(Long userId, Long friendId);
 
-    boolean existsByUserIdAndFriendId(UUID userId, UUID friendId);
+    boolean existsByUserIdAndFriendId(Long userId, Long friendId);
 
     Window<FriendshipJpaEntity> findAllByOrderByCreatedAtDescIdDesc(ScrollPosition scrollPosition, Limit limit);
 
     @Query("""
-            SELECT 
+            SELECT
              u.id,
              u.name,
-             u.surname,            
+             u.surname,
              u.username,
              u.birthDate,
              u.residence,
              u.createdAt,
-             f.createdAt as friendshipCreatedAt                          
+             f.createdAt as friendshipCreatedAt
             FROM UserJpaEntity u
             JOIN FriendshipJpaEntity f ON u.id = f.friendId
             WHERE f.userId = :userId AND (
@@ -38,8 +37,8 @@ public interface SpringDataFriendshipRepository
             ORDER BY f.createdAt DESC, f.friendId DESC
             """)
     Slice<UserWithFriendship> findAllFriends(
-            @Param("userId") UUID userId,
-            @Param("lastFriendId") UUID lastFriendId,
+            @Param("userId") Long userId,
+            @Param("lastFriendId") Long lastFriendId,
             @Param("lastCreatedAt") Instant lastCreatedAt,
             Pageable pageable
     );

@@ -18,8 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -44,7 +42,7 @@ class FriendshipServiceTest {
 
         @Test
         void handleUserDeleted() {
-            UUID userId = UUID.randomUUID();
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             friendshipService.handleIntegrationEvent(
                     new UserDeletedIntegrationEvent(userId)
@@ -62,9 +60,9 @@ class FriendshipServiceTest {
 
         @Test
         void add() {
-            UUID id = UUID.randomUUID();
-            UUID userId = UUID.randomUUID();
-            UUID friendId = UUID.randomUUID();
+            Long id = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             Friendship friendship = Friendship.builder()
                     .id(id)
@@ -107,9 +105,9 @@ class FriendshipServiceTest {
                 boolean existsUserId,
                 boolean existsFriendId
         ) {
-            UUID id = UUID.randomUUID();
-            UUID userId = UUID.randomUUID();
-            UUID friendId = UUID.randomUUID();
+            Long id = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             Friendship friendship = Friendship.builder()
                     .id(id)
@@ -143,9 +141,9 @@ class FriendshipServiceTest {
 
         @Test
         void friendshipAlreadyExists() {
-            UUID id = UUID.randomUUID();
-            UUID userId = UUID.randomUUID();
-            UUID friendId = UUID.randomUUID();
+            Long id = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             Friendship friendship = Friendship.builder()
                     .id(id)
@@ -181,8 +179,8 @@ class FriendshipServiceTest {
 
         @Test
         void delete() {
-            UUID userId = UUID.randomUUID();
-            UUID friendId = UUID.randomUUID();
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             when(userRepository.existsById(userId)).thenReturn(true);
             when(userRepository.existsById(friendId)).thenReturn(true);
@@ -207,8 +205,8 @@ class FriendshipServiceTest {
                 boolean existsUserId,
                 boolean existsFriendId
         ) {
-            UUID userId = UUID.randomUUID();
-            UUID friendId = UUID.randomUUID();
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
+            Long friendId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             when(userRepository.existsById(userId))
                     .thenReturn(existsUserId);
@@ -261,7 +259,7 @@ class FriendshipServiceTest {
 
         @Test
         void findAll() {
-            UUID userId = UUID.randomUUID();
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             PageResult<User> expected = mock(PageResult.class);
 
@@ -284,7 +282,7 @@ class FriendshipServiceTest {
 
         @Test
         void userDoesNotExist() {
-            UUID userId = UUID.randomUUID();
+            Long userId = java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
 
             when(userRepository.existsById(userId))
                     .thenReturn(false);

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Repository
@@ -39,7 +38,7 @@ public class FriendshipAdapter implements FriendshipRepository {
 
     @Override
     @Observed(name = "friendship-invalidate-cache", contextualName = "friendship-invalidate-cache")
-    public void invalidateCache(UUID userId) {
+    public void invalidateCache(Long userId) {
         invalidate(FRIENDS_PAGES_KEY, userId);
     }
 
@@ -58,13 +57,13 @@ public class FriendshipAdapter implements FriendshipRepository {
 
     @Override
     @Observed(name = "friendship-exist-id", contextualName = "friendship-exist-id")
-    public boolean existsByUserIdAndFriendId(UUID userId, UUID friendId) {
+    public boolean existsByUserIdAndFriendId(Long userId, Long friendId) {
         return repository.existsByUserIdAndFriendId(userId, friendId);
     }
 
     @Override
     @Observed(name = "friendship-delete-id", contextualName = "friendship-delete-id")
-    public void deleteByUserIdAndFriendId(UUID userId, UUID friendId) {
+    public void deleteByUserIdAndFriendId(Long userId, Long friendId) {
         repository.deleteByUserIdAndFriendId(userId, friendId);
         invalidate(FRIENDS_PAGES_KEY, userId);
         invalidate(FRIENDS_PAGES_KEY, friendId);
@@ -75,7 +74,7 @@ public class FriendshipAdapter implements FriendshipRepository {
     public PageResult<Friendship> findAll(Page page) {
         Page.Params params = page.tokenToTimeAndId();
         Slice<FriendshipMongoEntity> result = repository.findAll(
-                params == null ? UUID.randomUUID() : params.id(),
+                params == null ? java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE) : params.id(),
                 params == null ? Instant.now().plus(1, ChronoUnit.DAYS) : params.time(),
                 Pageable.ofSize(page.size()));
 
@@ -94,7 +93,7 @@ public class FriendshipAdapter implements FriendshipRepository {
 
     @Override
     @Observed(name = "friendship-find-friends", contextualName = "friendship-find-friends")
-    public PageResult<User> findAllFriends(UUID userId, Page page) {
+    public PageResult<User> findAllFriends(Long userId, Page page) {
         val pagesKey = FRIENDS_PAGES_KEY.formatted(userId);
         val dataKey = FRIENDS_KEY.formatted(userId, page.token(), page.size());
 
@@ -106,7 +105,7 @@ public class FriendshipAdapter implements FriendshipRepository {
 
         Page.Params params = page.tokenToTimeAndId();
         Slice<UserWithFriendship> result = repository.findAllFriends(userId,
-                params == null ? UUID.randomUUID() : params.id(),
+                params == null ? java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE) : params.id(),
                 params == null ? Instant.now().plus(1, ChronoUnit.DAYS) : params.time(),
                 Pageable.ofSize(page.size()));
 
@@ -129,7 +128,7 @@ public class FriendshipAdapter implements FriendshipRepository {
         return pageResult;
     }
 
-    private void invalidate(String redisPagesKeyTemplate, UUID userId) {
+    private void invalidate(String redisPagesKeyTemplate, Long userId) {
         try {
             String redisPagesKey = redisPagesKeyTemplate.formatted(userId);
             log.info("**** Invalidated cache for user ID {} for key: {}.", userId, redisPagesKey);

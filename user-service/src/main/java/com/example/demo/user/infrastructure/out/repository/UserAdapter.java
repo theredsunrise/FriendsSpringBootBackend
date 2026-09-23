@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Repository
@@ -44,20 +43,20 @@ public class UserAdapter implements UserRepository {
     @Override
     @Observed(name = "user-get-id", contextualName = "user-get-id")
     @Cacheable(value = CacheNames.USER_BY_ID, key = "#a0")
-    public Optional<User> getById(UUID userId) {
+    public Optional<User> getById(Long userId) {
         return repository.findById(userId).map(mapper::toDomain);
     }
 
     @Override
     @CacheEvict(value = CacheNames.USER_BY_ID, key = "#a0")
     @Observed(name = "user-delete-id", contextualName = "user-delete-id")
-    public void deleteById(UUID userId) {
+    public void deleteById(Long userId) {
         repository.deleteById(userId);
     }
 
     @Override
     @Observed(name = "user-exist-id", contextualName = "user-exist-id")
-    public boolean existsById(UUID id) {
+    public boolean existsById(Long id) {
         return repository.existsById(id);
     }
 

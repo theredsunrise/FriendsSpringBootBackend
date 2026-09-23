@@ -6,7 +6,6 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Getter
 @Builder(toBuilder = true)
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class User implements Serializable {
 
     @EqualsAndHashCode.Include
-    private UUID id;
+    private Long id;
     private String name;
     private String surname;
     private String username;
@@ -23,7 +22,7 @@ public class User implements Serializable {
     private String residence;
     private Instant createdAt;
 
-    private User(UUID id,
+    private User(Long id,
                  String name,
                  String surname,
                  String username,
@@ -58,4 +57,3 @@ public class User implements Serializable {
         this.createdAt = createdAt;
     }
 }
-

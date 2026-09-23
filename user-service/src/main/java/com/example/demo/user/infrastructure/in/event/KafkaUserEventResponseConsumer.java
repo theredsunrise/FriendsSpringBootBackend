@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 import static com.example.demo.user.infrastructure.in.event.KafkaUserEventKafkaConfig.USER_EVENT_LISTENER_FACTORY;
 
@@ -40,7 +39,7 @@ public class KafkaUserEventResponseConsumer {
     )
     public void listen(UserEventResponse message) {
         Long id = message.id();
-        UUID userId = message.userId();
+        Long userId = message.userId();
         log.info("**** Received response from user event for id: {}, userId: {}", id, userId);
 
         if (message.result()) {

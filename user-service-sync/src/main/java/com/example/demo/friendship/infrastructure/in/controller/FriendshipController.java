@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/friendships")
@@ -35,7 +34,7 @@ public class FriendshipController {
     @GetMapping("/friends")
     @Operation(summary = "Fetch friends")
     public ResponseEntity<UsersResponseDto> findAllFriends(
-            @RequestParam UUID userId,
+            @RequestParam Long userId,
             @Valid @ModelAttribute PageDto pageDto) {
         OpenTelemetryHelper.setMyTag("replica-friendship-user-friends-all");
 

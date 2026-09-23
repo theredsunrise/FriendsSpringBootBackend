@@ -9,11 +9,11 @@ import org.mapstruct.*;
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface FriendshipJpaMapper {
-    @Mapping(target = "uuid", source = "id")
+    @Mapping(target = "friendshipId", source = "id")
     @Mapping(target = "id", ignore = true)
     FriendshipMongoEntity toMongoEntity(Friendship friendship);
 
-    @Mapping(target = "id", source = "uuid")
+    @Mapping(target = "id", source = "friendshipId")
     @BeanMapping(ignoreUnmappedSourceProperties = "id")
     Friendship toDomain(FriendshipMongoEntity friendship);
 }

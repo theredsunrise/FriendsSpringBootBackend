@@ -17,7 +17,6 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 @Service
 public class SpringBootFriendshipService extends FriendshipService implements FriendshipUseCase {
@@ -43,13 +42,13 @@ public class SpringBootFriendshipService extends FriendshipService implements Fr
 
     @Override
     @Transactional
-    public void addToUser(UUID userId, UUID friendId) {
+    public void addToUser(Long userId, Long friendId) {
         super.addToUser(userId, friendId);
     }
 
     @Override
     @Transactional
-    public void deleteFromUser(UUID userId, UUID friendId) {
+    public void deleteFromUser(Long userId, Long friendId) {
         super.deleteFromUser(userId, friendId);
     }
 
@@ -59,7 +58,7 @@ public class SpringBootFriendshipService extends FriendshipService implements Fr
     }
 
     @Override
-    public PageResult<User> findAllFriends(UUID userId, Page page) {
+    public PageResult<User> findAllFriends(Long userId, Page page) {
         return super.findAllFriends(userId, page);
     }
 }

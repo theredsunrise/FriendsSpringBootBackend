@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/friendships")
@@ -47,7 +46,7 @@ public class FriendshipController {
 
     @DeleteMapping("/{userId}/friendship/{friendId}")
     @Operation(summary = "Delete a friendship by user ID and friend ID")
-    public ResponseEntity<Void> deleteFromUser(@PathVariable UUID userId, @PathVariable UUID friendId) {
+    public ResponseEntity<Void> deleteFromUser(@PathVariable Long userId, @PathVariable Long friendId) {
         OpenTelemetryHelper.setMyTag("friendship-delete");
 
         friendshipUseCase.deleteFromUser(userId, friendId);
@@ -57,7 +56,7 @@ public class FriendshipController {
     @GetMapping("/friends")
     @Operation(summary = "Fetch friends")
     public ResponseEntity<UsersResponseDto> findAllFriends(
-            @RequestParam UUID userId,
+            @RequestParam Long userId,
             @Valid @ModelAttribute PageDto pageDto) {
         OpenTelemetryHelper.setMyTag("friendship-user-friends-all");
 

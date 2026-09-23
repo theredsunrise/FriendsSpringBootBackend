@@ -13,7 +13,6 @@ import com.example.demo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class UserService implements UserUseCase {
@@ -42,7 +41,7 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public void delete(UUID userId) {
+    public void delete(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(String.format("User with ID: %s was not found.", userId));
         }
@@ -66,7 +65,7 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public User getById(UUID userId) {
+    public User getById(Long userId) {
         return userRepository.getById(userId).orElseThrow(
                 () -> new UserNotFoundException(String.format("User with ID: %s was not found.", userId))
         );

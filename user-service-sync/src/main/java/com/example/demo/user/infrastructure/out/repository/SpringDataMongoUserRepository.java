@@ -9,17 +9,16 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface SpringDataMongoUserRepository extends MongoRepository<UserMongoEntity, String> {
 
     boolean existsByUsername(String username);
 
-    boolean existsByUuid(UUID userId);
+    boolean existsByUserId(Long userId);
 
-    void deleteByUuid(UUID userId);
+    void deleteByUserId(Long userId);
 
-    Optional<UserMongoEntity> findByUuid(UUID userId);
+    Optional<UserMongoEntity> findByUserId(Long userId);
 
     @Query(
             value = """
@@ -28,7 +27,7 @@ public interface SpringDataMongoUserRepository extends MongoRepository<UserMongo
             { "createdAt": { "$lt": ?1 } },
             {
               "createdAt": ?1,
-              "uuid": { "$lt": ?0 }
+              "user_id": { "$lt": ?0 }
             }
           ]
         }
@@ -36,14 +35,13 @@ public interface SpringDataMongoUserRepository extends MongoRepository<UserMongo
             sort = """
         {
           "createdAt": -1,
-          "uuid": -1
+          "user_id": -1
         }
         """
     )
     Slice<UserMongoEntity> findAll(
-            @Param("lastUserId") UUID lastUserId,
+            @Param("lastUserId") Long lastUserId,
             @Param("lastCreatedAt") Instant lastCreatedAt,
             Pageable pageable
     );
 }
-

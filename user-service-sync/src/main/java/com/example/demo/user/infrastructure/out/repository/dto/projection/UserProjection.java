@@ -4,13 +4,12 @@ import org.bson.types.ObjectId;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public interface UserProjection {
 
      ObjectId getId();
 
-     UUID getUuid();
+     Long getUserId();
 
      String getName();
 

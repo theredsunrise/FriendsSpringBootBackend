@@ -9,23 +9,22 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public interface SpringDataMongoFriendshipRepository extends MongoRepository<FriendshipMongoEntity, String> {
 
-    void deleteByUserIdAndFriendId(UUID userId, UUID friendId);
+    void deleteByUserIdAndFriendId(Long userId, Long friendId);
 
-    boolean existsByUserIdAndFriendId(UUID userId, UUID friendId);
+    boolean existsByUserIdAndFriendId(Long userId, Long friendId);
 
     @Aggregation(pipeline = {
             """
                     {
                       "$match": {
                         "$or": [
-                          { "createdAt": { "$lt": ?1 } },
+                          { "created_at": { "$lt": ?1 } },
                           {
-                            "createdAt": ?1,
-                            "uuid": { "$lt": ?0 }
+                            "created_at": ?1,
+                            "friendship_id": { "$lt": ?0 }
                           }
                         ]
                       }
@@ -34,14 +33,14 @@ public interface SpringDataMongoFriendshipRepository extends MongoRepository<Fri
             """
                     {
                       "$sort": {
-                        "createdAt": -1,
-                        "uuid": -1
+                        "created_at": -1,
+                        "friendship_id": -1
                       }
                     }
                     """
     })
     Slice<FriendshipMongoEntity> findAll(
-            @Param("lastUuid") UUID lastUuid,
+            @Param("lastId") Long lastId,
             @Param("lastCreatedAt") Instant lastCreatedAt,
             Pageable pageable
     );
@@ -50,7 +49,7 @@ public interface SpringDataMongoFriendshipRepository extends MongoRepository<Fri
             """
                     {
                       "$match": {
-                        "id_user": ?0,
+                        "user_id": ?0,
                         "$or": [
                           {
                             "created_at": {
@@ -82,7 +81,7 @@ public interface SpringDataMongoFriendshipRepository extends MongoRepository<Fri
                       "$lookup": {
                         "from": "users",
                         "localField": "id_friend",
-                        "foreignField": "uuid",
+                        "foreignField": "user_id",
                         "as": "friend"
                       }
                     }
@@ -101,7 +100,7 @@ public interface SpringDataMongoFriendshipRepository extends MongoRepository<Fri
                     {
                       "$project": {
                         "_id": "$friend._id",
-                        "uuid": "$friend.uuid",
+                        "userId": "$friend.user_id",
                         "name": "$friend.name",
                         "surname": "$friend.surname",
                         "username": "$friend.username",
@@ -114,10 +113,9 @@ public interface SpringDataMongoFriendshipRepository extends MongoRepository<Fri
                     """
     })
     Slice<UserWithFriendship> findAllFriends(
-            UUID userId,
-            UUID lastFriendId,
+            Long userId,
+            Long lastFriendId,
             Instant lastCreatedAt,
             Pageable pageable
     );
 }
-

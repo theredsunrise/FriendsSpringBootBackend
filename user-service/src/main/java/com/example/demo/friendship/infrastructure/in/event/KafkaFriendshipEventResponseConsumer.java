@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 import static com.example.demo.friendship.infrastructure.in.event.KafkaFriendshipEventKafkaConfig.FRIENDSHIP_KAFKA_LISTENER_FACTORY;
 
@@ -40,8 +39,8 @@ public class KafkaFriendshipEventResponseConsumer {
     )
     public void listen(FriendshipEventResponse message) {
         Long id = message.id();
-        UUID userId = message.userId();
-        UUID friendId = message.friendId();
+        Long userId = message.userId();
+        Long friendId = message.friendId();
         log.info("**** Received response from friendship event for id: {}, userId: {}, friendId: {}.",
                 id, userId, friendId);
         if (message.result()) {

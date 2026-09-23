@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 
 @Entity
@@ -21,8 +20,8 @@ public class UserJpaEntity implements UserProjection {
 
     @Id
     @EqualsAndHashCode.Include
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, length = 100)
     private String name;

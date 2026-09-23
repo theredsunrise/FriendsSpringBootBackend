@@ -1,12 +1,12 @@
 package com.example.demo.userServicePerformance.actions;
 
+import java.util.random.RandomGenerator;
 import com.example.demo.userServicePerformance.SharedTestData;
 import io.gatling.javaapi.core.ChainBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.gatling.javaapi.core.CoreDsl.*;
@@ -34,7 +34,7 @@ public class UserActions {
                                     .set("name", "John" + index)
                                     .set("surname", "Doe" + index)
                                     .set("username",
-                                            "john" + index + "_" + UUID.randomUUID())
+                                            "john" + index + "_" + java.util.concurrent.ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE))
                                     .set("birthDate", birthDate)
                                     .set("residence", "Bratislava" + index);
 

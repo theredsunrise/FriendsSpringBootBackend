@@ -4,15 +4,14 @@ import com.example.demo.shared.application.port.in.Page;
 import com.example.demo.shared.application.port.in.PageResult;
 import com.example.demo.user.domain.User;
 
-import java.util.UUID;
 
 public interface UserUseCase {
 
     User create(User user);
 
-    void delete(UUID userId);
+    void delete(Long userId);
 
-    User getById(UUID userId);
+    User getById(Long userId);
 
     PageResult<User> findAll(Page page);
 }

@@ -10,11 +10,11 @@ import org.mapstruct.*;
 )
 public interface UserJpaMapper {
 
-    @Mapping(target = "uuid", source = "id")
+    @Mapping(target = "userId", source = "id")
     @Mapping(target = "id", ignore = true)
     UserMongoEntity toMongoEntity(User user);
 
-    @Mapping(target = "id", source = "uuid")
+    @Mapping(target = "id", source = "userId")
     @BeanMapping(ignoreUnmappedSourceProperties = "id")
     User toDomain(UserMongoEntity mongoEntity);
 }

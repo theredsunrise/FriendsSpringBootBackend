@@ -9,7 +9,7 @@ import org.mapstruct.*;
         unmappedSourcePolicy = ReportingPolicy.ERROR)
 public interface UserWithFriendshipMapper {
 
-    @Mapping(target = "id", source = "uuid")
+    @Mapping(target = "id", source = "userId")
     @BeanMapping(ignoreUnmappedSourceProperties = {"id", "friendshipCreatedAt"})
     User toUser(UserWithFriendship dto);
 }

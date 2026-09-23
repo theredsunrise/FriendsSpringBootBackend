@@ -5,19 +5,18 @@ import com.example.demo.shared.application.port.in.Page;
 import com.example.demo.shared.application.port.in.PageResult;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface UserRepository {
 
     User save(User user);
 
-    void deleteById(UUID userId);
+    void deleteById(Long userId);
 
     boolean existsByUsername(String username);
 
-    boolean existsById(UUID userId);
+    boolean existsById(Long userId);
 
-    Optional<User> getById(UUID userId);
+    Optional<User> getById(Long userId);
 
     PageResult<User> findAll(Page page);
 }

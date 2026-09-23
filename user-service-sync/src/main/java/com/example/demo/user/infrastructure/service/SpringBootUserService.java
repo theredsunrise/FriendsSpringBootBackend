@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 
 @Service
 public class SpringBootUserService extends UserService implements UserUseCase {
@@ -32,7 +31,7 @@ public class SpringBootUserService extends UserService implements UserUseCase {
 
     @Override
     @Transactional
-    public void delete(UUID userId) {
+    public void delete(Long userId) {
         super.delete(userId);
         eventPublisher.publishEvent(new UserDeletedIntegrationEvent(userId));
     }

@@ -21,7 +21,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 
 import static com.example.demo.shared.infrastructure.in.event.KafkaTemplateConfig.JSON_TEMPLATE;
 import static com.example.demo.shared.infrastructure.in.event.KafkaTemplateConfig.STRING_TEMPLATE;
@@ -64,7 +63,7 @@ public class KafkaUserEventConsumer {
         User user;
         OutBoxEventType event;
         Long outboxId = null;
-        UUID userId = null;
+        Long userId = null;
 
         try {
             outboxId = Long.valueOf(outboxIdStr);
@@ -121,7 +120,7 @@ public class KafkaUserEventConsumer {
             String errorMessage) {
 
         Long outboxId = null;
-        UUID userId = null;
+        Long userId = null;
 
         log.error("**** Dead letter user record occurred: Outbox ID:{}, event type:{}, error: {}", outboxIdStr, eventType, errorMessage);
         try {
