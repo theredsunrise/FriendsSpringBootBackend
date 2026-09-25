@@ -9,11 +9,9 @@ import java.time.LocalDate;
 
 @Getter
 @Builder(toBuilder = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class User implements Serializable {
 
-    @EqualsAndHashCode.Include
     private Long id;
     private String name;
     private String surname;
@@ -55,5 +53,22 @@ public class User implements Serializable {
         this.birthDate = birthDate;
         this.residence = residence;
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return id != null && id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

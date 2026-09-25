@@ -9,11 +9,9 @@ import java.time.Instant;
 
 @Getter
 @Builder(toBuilder = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Friendship implements Serializable {
 
-    @EqualsAndHashCode.Include
     private Long id;
     private Long userId;
     private Long friendId;
@@ -34,5 +32,22 @@ public class Friendship implements Serializable {
         this.userId = userId;
         this.friendId = friendId;
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Friendship that = (Friendship) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

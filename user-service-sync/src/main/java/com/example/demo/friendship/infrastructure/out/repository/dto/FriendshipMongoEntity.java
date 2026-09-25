@@ -14,11 +14,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class FriendshipMongoEntity {
 
     @Id
-    @EqualsAndHashCode.Include
     private ObjectId id;
 
     @Field("friendship_id")
@@ -32,4 +30,21 @@ public class FriendshipMongoEntity {
 
     @Field("created_at")
     private Instant createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FriendshipMongoEntity that = (FriendshipMongoEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

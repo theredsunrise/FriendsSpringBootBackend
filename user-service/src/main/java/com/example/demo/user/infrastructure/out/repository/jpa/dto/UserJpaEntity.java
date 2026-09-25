@@ -3,6 +3,7 @@ package com.example.demo.user.infrastructure.out.repository.jpa.dto;
 import com.example.demo.user.infrastructure.out.repository.jpa.dto.projection.UserProjection;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,11 +16,9 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserJpaEntity implements UserProjection {
 
     @Id
-    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -43,4 +42,21 @@ public class UserJpaEntity implements UserProjection {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        UserJpaEntity that = (UserJpaEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Hibernate.getClass(this).hashCode();
+    }
 }

@@ -16,10 +16,8 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserMongoEntity implements UserProjection {
     @Id
-    @EqualsAndHashCode.Include
     private ObjectId id;
 
     @Field("user_id")
@@ -38,4 +36,21 @@ public class UserMongoEntity implements UserProjection {
 
     @Field("created_at")
     private Instant createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserMongoEntity that = (UserMongoEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

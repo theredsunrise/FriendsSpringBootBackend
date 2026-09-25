@@ -4,6 +4,7 @@ import com.example.demo.shared.domain.OutBoxEventType;
 import com.example.demo.shared.domain.OutBoxStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 @Entity
 @Table(name = "users_outbox")
@@ -12,11 +13,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserOutboxJpaEntity {
 
     @Id
-    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -42,4 +41,21 @@ public class UserOutboxJpaEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "event_status", nullable = false, length = 20)
     private OutBoxStatus eventStatus;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        UserOutboxJpaEntity that = (UserOutboxJpaEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Hibernate.getClass(this).hashCode();
+    }
 }
