@@ -1,8 +1,20 @@
 # Friends Spring Boot Backend
 
-Friends is a Spring Boot backend application that stores user data and allows users to create friendships. The primary data is stored in PostgreSQL. Changes are propagated asynchronously through Kafka to a read replica backed by MongoDB, which is used for efficient read operations. The system also includes an HTTPS API gateway.
+Friends is a Spring Boot backend application that stores user data and allows users to create friendships. The primary data is stored in PostgreSQL. Changes are propagated asynchronously through Kafka to a read replica backed by MongoDB, which is used for efficient read operations. The system communicates through an HTTPS API gateway.
 
+The application is designed to handle high loads.
 Friend and friendship queries use token-based pagination designed to handle large datasets efficiently without loading all records into memory. The same pagination model is used when reading data from the primary service and from the MongoDB replica.
+
+```mermaid
+flowchart LR
+    G[Gateway] <--> A
+    G[Gateway] <--> C
+    M[Main CRUD] <--> G
+    R[Replica Reading] <--> G
+    A[Main Microservice<br><small>PostgreSQL</small></br>]
+-->|WAL|B[Kafka Connect<br><small>Debezium</small></br>]
+-->|Kafka|C[Replica Microservice<br><small>MongoDB</small></br>]
+```
 
 ## Technology stack
 
